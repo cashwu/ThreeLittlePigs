@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Little Pigs - Lines Practice</title>
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #fef9ef;
+  color: #333;
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 24px;
+  color: #e67e22;
+}
+.line-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.line-num {
+  display: inline-block;
+  background: #e67e22;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  line-height: 28px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.en-row, .zh-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+.en-text {
+  font-size: 22px;
+  line-height: 1.5;
+  flex: 1;
+}
+.zh-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #888;
+  flex: 1;
+}
+.play-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s;
+}
+.play-btn:active {
+  transform: scale(0.9);
+}
+.play-btn.en {
+  background: #3498db;
+  color: #fff;
+}
+.play-btn.zh {
+  background: #2ecc71;
+  color: #fff;
+}
+.play-btn.playing {
+  background: #e74c3c;
+}
+</style>
+</head>
+<body>
+
+<h1>Three Little Pigs</h1>
+
+<div id="lines"></div>
+
+<script>
+const LINES = [
+  {
+    "en": "Hi dear friends! We tried straw and wood, but they were not strong enough!",
+    "zh": "嗨，親愛的朋友們！我們試過稻草和木頭，但都不夠堅固！"
+  },
+  {
+    "en": "Now we need something hard, heavy and super strong!",
+    "zh": "現在我們需要又硬、又重、又超級堅固的東西！"
+  },
+  {
+    "en": "I am so excited! We will finally be safe and warm inside!",
+    "zh": "我好興奮！我們終於可以安全又溫暖地待在裡面了！"
+  },
+  {
+    "en": "No more running away, no more falling houses today!",
+    "zh": "不用再逃跑了，今天不會再有房子倒塌了！"
+  },
+  {
+    "en": "Is the brick house strong enough to keep the big bad wolf away?",
+    "zh": "磚頭蓋的房子夠堅固，能擋住大野狼嗎？"
+  },
+  {
+    "en": "Work carefully everyone, make it steady and really strong!",
+    "zh": "大家小心蓋，要蓋得穩、蓋得堅固！"
+  },
+  {
+    "en": "Our house is made of bricks, it is super strong!",
+    "zh": "我們的房子是磚頭做的，超級堅固！"
+  },
+  {
+    "en": "Thank you, bricks, for keeping us safe!",
+    "zh": "謝謝你，磚頭，保護了我們的安全！"
+  },
+  {
+    "en": "We are safe and happy in our strong brick house!",
+    "zh": "我們在堅固的磚頭屋裡，安全又快樂！"
+  }
+];
+
+let currentAudio = null;
+let currentBtn = null;
+
+function stopCurrent() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    if (currentBtn) currentBtn.classList.remove('playing');
+    currentAudio = null;
+    currentBtn = null;
+  }
+}
+
+function play(src, btn) {
+  stopCurrent();
+  const audio = new Audio(src);
+  currentAudio = audio;
+  currentBtn = btn;
+  btn.classList.add('playing');
+  audio.play();
+  audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    currentAudio = null;
+    currentBtn = null;
+  });
+}
+
+const container = document.getElementById('lines');
+LINES.forEach((line, i) => {
+  const idx = String(i + 1).padStart(2, '0');
+  const card = document.createElement('div');
+  card.className = 'line-card';
+  card.innerHTML = `
+    <span class="line-num">${i + 1}</span>
+    <div class="en-row">
+      <button class="play-btn en" data-src="audio/en_${idx}.mp3">&#9654;</button>
+      <div class="en-text">${line.en}</div>
+    </div>
+    <div class="zh-row">
+      <button class="play-btn zh" data-src="audio/zh_${idx}.mp3">&#9654;</button>
+      <div class="zh-text">${line.zh}</div>
+    </div>
+  `;
+  container.appendChild(card);
+});
+
+document.querySelectorAll('.play-btn').forEach(btn => {
+  btn.addEventListener('click', () => play(btn.dataset.src, btn));
+});
+</script>
+
+</body>
+</html>
