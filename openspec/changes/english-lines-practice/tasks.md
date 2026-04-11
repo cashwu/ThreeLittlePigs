@@ -14,3 +14,10 @@
 - [x] 3.1 在 `generate_audio.py` 中加入產生 `index.html` 的邏輯（display all lines with translations），將台詞資料內嵌為 JS 變數，頁面可直接用 `file://` 開啟，以 child-friendly layout 呈現，英文大字、中文小字
 - [x] 3.2 為每句英文和中文各加上播放按鈕（play English audio per line、play Chinese audio per line），實作 single active playback 規則：任何新播放都停止目前播放，不分英文中文
 - [x] 3.3 確保網頁在手機和平板上可正常瀏覽（responsive layout）
+
+## 4. UI 增強
+
+- [x] 4.1 在 `generate_audio.py` 的 HTML 模板中，將英文字體從 22px 加大到 28px、中文字體從 16px 加大到 20px（child-friendly layout 更新）
+- [x] 4.2 在 HTML 模板頂部加入播放速度控制按鈕（playback speed control）：「慢2倍」(0.5x)、「慢1倍」(0.75x)、「正常」(1.0x)，預設為「正常」，當前速度高亮顯示
+- [x] 4.3 速度設定須即時套用到正在播放的音檔，並持續影響後續所有播放
+- [x] 4.4 重新執行 `python generate_audio.py` 產生更新後的 `index.html`，驗證速度切換功能正常

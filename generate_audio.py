@@ -127,12 +127,12 @@ h1 {{
   margin-top: 8px;
 }}
 .en-text {{
-  font-size: 22px;
+  font-size: 28px;
   line-height: 1.5;
   flex: 1;
 }}
 .zh-text {{
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
   color: #888;
   flex: 1;
@@ -164,11 +164,38 @@ h1 {{
 .play-btn.playing {{
   background: #e74c3c;
 }}
+.speed-bar {{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}}
+.speed-btn {{
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 2px solid #e67e22;
+  background: #fff;
+  color: #e67e22;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+}}
+.speed-btn.active {{
+  background: #e67e22;
+  color: #fff;
+}}
 </style>
 </head>
 <body>
 
 <h1>Three Little Pigs</h1>
+
+<div class="speed-bar">
+  <button class="speed-btn" data-rate="0.33">慢2倍</button>
+  <button class="speed-btn" data-rate="0.5">慢1倍</button>
+  <button class="speed-btn active" data-rate="0.75">正常</button>
+</div>
 
 <div id="lines"></div>
 
@@ -177,6 +204,18 @@ const LINES = {lines_json_str};
 
 let currentAudio = null;
 let currentBtn = null;
+let playbackRate = 0.75;
+
+document.querySelectorAll('.speed-btn').forEach(btn => {{
+  btn.addEventListener('click', () => {{
+    document.querySelector('.speed-btn.active').classList.remove('active');
+    btn.classList.add('active');
+    playbackRate = parseFloat(btn.dataset.rate);
+    if (currentAudio) {{
+      currentAudio.playbackRate = playbackRate;
+    }}
+  }});
+}});
 
 function stopCurrent() {{
   if (currentAudio) {{
@@ -191,6 +230,7 @@ function stopCurrent() {{
 function play(src, btn) {{
   stopCurrent();
   const audio = new Audio(src);
+  audio.playbackRate = playbackRate;
   currentAudio = audio;
   currentBtn = btn;
   btn.classList.add('playing');

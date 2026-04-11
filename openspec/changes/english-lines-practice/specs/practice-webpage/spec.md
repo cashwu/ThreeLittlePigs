@@ -46,9 +46,34 @@ Any new audio playback SHALL stop the currently playing audio, regardless of whe
 - **WHEN** an English audio is playing and the user clicks a different English play button
 - **THEN** the first audio SHALL stop and the second SHALL start
 
+### Requirement: Playback speed control
+
+The webpage SHALL display speed control buttons at the top of the page, before the line cards. The buttons SHALL be "慢2倍", "慢1倍", "正常". The currently active speed SHALL be visually highlighted.
+
+- "慢2倍" SHALL set `Audio.playbackRate` to 0.33
+- "慢1倍" SHALL set `Audio.playbackRate` to 0.5
+- "正常" SHALL set `Audio.playbackRate` to 0.75
+
+The default speed SHALL be "正常" (0.75x). The selected speed SHALL apply to the currently playing audio immediately and to all subsequent audio playback.
+
+#### Scenario: User selects slow speed then plays audio
+
+- **WHEN** the user clicks "慢2倍" and then clicks any play button
+- **THEN** the audio SHALL play at 0.33x speed
+
+#### Scenario: User changes speed during playback
+
+- **WHEN** audio is playing and the user clicks a different speed button
+- **THEN** the currently playing audio SHALL immediately change to the new speed
+
+#### Scenario: Speed persists across lines
+
+- **WHEN** the user selects "慢1倍" and plays line 1, then plays line 2
+- **THEN** line 2 SHALL also play at 0.5x speed
+
 ### Requirement: Child-friendly layout
 
-The webpage SHALL use large font sizes (minimum 20px for English text), generous spacing between lines, and a clean layout suitable for a child to read and interact with.
+The webpage SHALL use large font sizes (minimum 28px for English text, minimum 20px for Chinese text), generous spacing between lines, and a clean layout suitable for a child to read and interact with.
 
 #### Scenario: Layout is readable on tablet
 
