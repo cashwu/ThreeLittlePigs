@@ -57,22 +57,52 @@ async def generate_audio(text: str, voice: str, output_path: str) -> None:
     await communicate.save(output_path)
 
 
-async def generate_all_audio(lines: list[dict]) -> None:
-    """Generate all English and Chinese MP3 files."""
+async def generate_audio_with_timing(text: str, voice: str, output_path: str) -> list[dict]:
+    """Generate MP3 and capture word boundary timing data."""
+    communicate = edge_tts.Communicate(text, voice, boundary="WordBoundary")
+    word_timings = []
+
+    with open(output_path, "wb") as f:
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                f.write(chunk["data"])
+            elif chunk["type"] == "WordBoundary":
+                offset_seconds = chunk["offset"] / 10_000_000  # 100-ns units to seconds
+                word_timings.append({
+                    "word": chunk["text"],
+                    "offset": round(offset_seconds, 3),
+                })
+
+    return word_timings
+
+
+async def generate_all_audio(lines: list[dict]) -> list[list[dict]]:
+    """Generate all English and Chinese MP3 files. Returns word timing data for English lines."""
     os.makedirs(AUDIO_DIR, exist_ok=True)
 
-    tasks = []
+    # Generate English audio with word timing (sequential to collect per-line timing)
+    all_timings = []
     for i, line in enumerate(lines):
         idx = f"{i + 1:02d}"
-        tasks.append(generate_audio(line["en"], EN_VOICE, os.path.join(AUDIO_DIR, f"en_{idx}.mp3")))
-        tasks.append(generate_audio(line["zh"], ZH_VOICE, os.path.join(AUDIO_DIR, f"zh_{idx}.mp3")))
+        timings = await generate_audio_with_timing(
+            line["en"], EN_VOICE, os.path.join(AUDIO_DIR, f"en_{idx}.mp3")
+        )
+        all_timings.append(timings)
 
-    await asyncio.gather(*tasks)
+    # Generate Chinese audio in parallel (no timing needed)
+    zh_tasks = []
+    for i, line in enumerate(lines):
+        idx = f"{i + 1:02d}"
+        zh_tasks.append(generate_audio(line["zh"], ZH_VOICE, os.path.join(AUDIO_DIR, f"zh_{idx}.mp3")))
+    await asyncio.gather(*zh_tasks)
+
+    return all_timings
 
 
-def generate_html(lines: list[dict]) -> None:
-    """Generate index.html with line data embedded inline."""
+def generate_html(lines: list[dict], word_timings: list[list[dict]]) -> None:
+    """Generate index.html with line data and word timing embedded inline."""
     lines_json_str = json.dumps(lines, ensure_ascii=False, indent=2)
+    timings_json_str = json.dumps(word_timings, ensure_ascii=False, indent=2)
     html = f"""\
 <!DOCTYPE html>
 <html lang="en">
@@ -164,6 +194,10 @@ h1 {{
 .play-btn.playing {{
   background: #e74c3c;
 }}
+.word-highlight {{
+  color: #e74c3c;
+  font-weight: bold;
+}}
 .speed-bar {{
   display: flex;
   justify-content: center;
@@ -202,10 +236,15 @@ h1 {{
 
 <script>
 const LINES = {lines_json_str};
+const TIMINGS = {timings_json_str};
 
 let currentAudio = null;
 let currentBtn = null;
+let currentLineIdx = -1;
 let playbackRate = 0.75;
+
+const PLAY_ICON = '\u25B6';
+const PAUSE_ICON = '\u23F8';
 
 document.querySelectorAll('.speed-btn').forEach(btn => {{
   btn.addEventListener('click', () => {{
@@ -218,29 +257,88 @@ document.querySelectorAll('.speed-btn').forEach(btn => {{
   }});
 }});
 
+function clearHighlights(lineIdx) {{
+  if (lineIdx < 0) return;
+  const spans = document.querySelectorAll(`#en-words-${{lineIdx}} .word-span`);
+  spans.forEach(s => s.classList.remove('word-highlight'));
+}}
+
 function stopCurrent() {{
   if (currentAudio) {{
     currentAudio.pause();
     currentAudio.currentTime = 0;
-    if (currentBtn) currentBtn.classList.remove('playing');
+    if (currentBtn) {{
+      currentBtn.classList.remove('playing');
+      currentBtn.textContent = PLAY_ICON;
+    }}
+    clearHighlights(currentLineIdx);
     currentAudio = null;
     currentBtn = null;
+    currentLineIdx = -1;
   }}
 }}
 
-function play(src, btn) {{
+function updateHighlight() {{
+  if (!currentAudio || currentLineIdx < 0) return;
+  const timings = TIMINGS[currentLineIdx];
+  if (!timings || !timings.length) return;
+  const spans = document.querySelectorAll(`#en-words-${{currentLineIdx}} .word-span`);
+  if (spans.length !== timings.length) return;
+  const t = currentAudio.currentTime;
+  let activeIdx = -1;
+  for (let i = 0; i < timings.length; i++) {{
+    if (t >= timings[i].offset) activeIdx = i;
+  }}
+  spans.forEach((s, i) => {{
+    if (i === activeIdx) s.classList.add('word-highlight');
+    else s.classList.remove('word-highlight');
+  }});
+}}
+
+function handleClick(btn, lineIdx, isEnglish) {{
+  // Same button: toggle play/pause
+  if (currentBtn === btn && currentAudio) {{
+    if (currentAudio.paused) {{
+      currentAudio.play();
+      btn.classList.add('playing');
+      btn.textContent = PAUSE_ICON;
+    }} else {{
+      currentAudio.pause();
+      btn.classList.remove('playing');
+      btn.textContent = PLAY_ICON;
+      // Highlight persists on pause — do not clear
+    }}
+    return;
+  }}
+
+  // Different button: stop previous, start new
   stopCurrent();
+  const idx = String(lineIdx + 1).padStart(2, '0');
+  const src = isEnglish ? `audio/en_${{idx}}.mp3` : `audio/zh_${{idx}}.mp3`;
   const audio = new Audio(src);
   audio.playbackRate = playbackRate;
   currentAudio = audio;
   currentBtn = btn;
+  currentLineIdx = isEnglish ? lineIdx : -1;
+
   btn.classList.add('playing');
-  audio.play();
+  btn.textContent = PAUSE_ICON;
+
+  if (isEnglish) {{
+    clearHighlights(lineIdx);
+    audio.addEventListener('timeupdate', updateHighlight);
+  }}
+
   audio.addEventListener('ended', () => {{
     btn.classList.remove('playing');
+    btn.textContent = PLAY_ICON;
+    clearHighlights(currentLineIdx);
     currentAudio = null;
     currentBtn = null;
+    currentLineIdx = -1;
   }});
+
+  audio.play();
 }}
 
 const container = document.getElementById('lines');
@@ -248,14 +346,25 @@ LINES.forEach((line, i) => {{
   const idx = String(i + 1).padStart(2, '0');
   const card = document.createElement('div');
   card.className = 'line-card';
+
+  // Build English text with word spans for karaoke
+  const words = line.en.split(/\\s+/);
+  const timings = TIMINGS[i] || [];
+  let enHtml;
+  if (words.length === timings.length) {{
+    enHtml = words.map(w => `<span class="word-span">${{w}}</span>`).join(' ');
+  }} else {{
+    enHtml = line.en;
+  }}
+
   card.innerHTML = `
     <span class="line-num">${{i + 1}}</span>
     <div class="en-row">
-      <button class="play-btn en" data-src="audio/en_${{idx}}.mp3">&#9654;</button>
-      <div class="en-text">${{line.en}}</div>
+      <button class="play-btn en" data-line="${{i}}" data-lang="en">${{PLAY_ICON}}</button>
+      <div class="en-text" id="en-words-${{i}}">${{enHtml}}</div>
     </div>
     <div class="zh-row">
-      <button class="play-btn zh" data-src="audio/zh_${{idx}}.mp3">&#9654;</button>
+      <button class="play-btn zh" data-line="${{i}}" data-lang="zh">${{PLAY_ICON}}</button>
       <div class="zh-text">${{line.zh}}</div>
     </div>
   `;
@@ -263,7 +372,11 @@ LINES.forEach((line, i) => {{
 }});
 
 document.querySelectorAll('.play-btn').forEach(btn => {{
-  btn.addEventListener('click', () => play(btn.dataset.src, btn));
+  btn.addEventListener('click', () => {{
+    const lineIdx = parseInt(btn.dataset.line);
+    const isEnglish = btn.dataset.lang === 'en';
+    handleClick(btn, lineIdx, isEnglish);
+  }});
 }});
 </script>
 
@@ -294,11 +407,11 @@ async def main():
 
     # 4. Generate audio files
     print("Generating audio files...")
-    await generate_all_audio(lines)
+    word_timings = await generate_all_audio(lines)
     print(f"Generated {len(lines) * 2} audio files in {AUDIO_DIR}/")
 
     # 5. Generate index.html
-    generate_html(lines)
+    generate_html(lines, word_timings)
     print(f"Generated {HTML_PATH}")
 
 
