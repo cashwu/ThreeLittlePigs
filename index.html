@@ -60,6 +60,7 @@ h1 {
   line-height: 1.5;
   color: #888;
   flex: 1;
+  margin-left: 50px;
 }
 .play-btn {
   flex-shrink: 0;
@@ -121,9 +122,9 @@ h1 {
 <p style="text-align:center; font-size:20px; color:#888; margin-bottom:20px;">Ryan - pig 2</p>
 
 <div class="speed-bar">
-  <button class="speed-btn" data-rate="0.33">慢2倍</button>
-  <button class="speed-btn" data-rate="0.5">慢1倍</button>
-  <button class="speed-btn active" data-rate="0.75">正常</button>
+  <button class="speed-btn" data-rate="0.33">慢慢</button>
+  <button class="speed-btn active" data-rate="0.5">正常</button>
+  <!-- <button class="speed-btn" data-rate="0.75">正常</button> -->
 </div>
 
 <div id="lines"></div>
@@ -563,7 +564,7 @@ const TIMINGS = [
 let currentAudio = null;
 let currentBtn = null;
 let currentLineIdx = -1;
-let playbackRate = 0.75;
+let playbackRate = 0.5;
 
 const PLAY_ICON = '▶';
 const PAUSE_ICON = '⏸';
@@ -686,7 +687,7 @@ LINES.forEach((line, i) => {
       <div class="en-text" id="en-words-${i}">${enHtml}</div>
     </div>
     <div class="zh-row">
-      <button class="play-btn zh" data-line="${i}" data-lang="zh">${PLAY_ICON}</button>
+      <!-- <button class="play-btn zh" data-line="${i}" data-lang="zh">${PLAY_ICON}</button> -->
       <div class="zh-text">${line.zh}</div>
     </div>
   `;
