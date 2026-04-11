@@ -1,3 +1,4 @@
 # Spectra app data
 .spectra/
 openspec/.vector-search.db*
+.DS_Store
