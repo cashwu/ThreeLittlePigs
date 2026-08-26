@@ -2,3 +2,6 @@
 .spectra/
 openspec/.vector-search.db*
 .DS_Store
+.cash-skills/receipt.tsv
+.cash-skills/state/
+__pycache__/

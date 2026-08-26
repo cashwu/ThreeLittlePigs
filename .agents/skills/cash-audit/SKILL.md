@@ -1,13 +1,23 @@
 ---
-name: spectra-audit
+name: cash-audit
 description: "Audit changed code for security sharp edges — dangerous defaults, type confusion, and silent failures"
 license: MIT
-compatibility: Requires spectra CLI.
 metadata:
-  author: spectra
+  author: cash
   version: "1.0"
-  generatedBy: "Spectra"
 ---
+
+## Project-local Cash CLI bootstrap
+
+執行任何 Cash artifact command 前，MUST 先從目前目錄解析並驗證 Git root，再使用該 root 下的 absolute launcher；不得依賴 PATH 或外部 runtime：
+
+```shell
+cash_root="$(git rev-parse --show-toplevel)" || exit 1
+cash_cli="$cash_root/.cash-skills/bin/cash"
+test -x "$cash_cli" || exit 1
+```
+
+同一段 workflow 後續每個 artifact command MUST 使用 `"$cash_cli"`。
 
 Audit changed code for security sharp edges — API design traps, dangerous defaults, and interfaces that make it easy to do the wrong thing.
 
@@ -19,8 +29,8 @@ Good APIs don't require developers to "be careful" to stay secure. If the correc
 
 This skill operates in two modes depending on how it's invoked:
 
-- **Standalone** (`$spectra-audit`): Full 3-agent parallel analysis on current git diff. See [Standalone Mode](#standalone-mode).
-- **Discipline** (via `$spectra-apply` when `audit: true`): Condensed checklist applied during implementation. See [Discipline Mode](#discipline-mode).
+- **Standalone** (`$cash-audit`): Full 3-agent parallel analysis on current git diff. See [Standalone Mode](#standalone-mode).
+- **Discipline** (via `$cash-apply` when `audit: true`): Condensed checklist applied during implementation. See [Discipline Mode](#discipline-mode).
 
 Both modes share the same [Core Framework](#core-framework).
 
@@ -28,7 +38,7 @@ Both modes share the same [Core Framework](#core-framework).
 
 ## Standalone Mode
 
-When invoked directly as `$spectra-audit`:
+When invoked directly as `$cash-audit`:
 
 ### Phase 1: Gather Changes
 
@@ -90,7 +100,7 @@ End with a brief summary of what was fixed (or confirm the code is clean).
 
 ## Discipline Mode
 
-When referenced by `$spectra-apply` (via `spectra instructions --skill audit`), do NOT launch the 3-agent workflow above. Instead, apply this condensed checklist continuously during implementation.
+When referenced by `$cash-apply` (via `"$cash_cli" instructions --skill audit`), do NOT launch the 3-agent workflow above. Instead, apply this condensed checklist continuously during implementation.
 
 ### Quick 3-Role Check
 
@@ -123,6 +133,8 @@ Not every line of code needs audit scrutiny. Focus on:
 
 ---
 
+**Response language**: All user-facing responses in this workflow MUST be written in Traditional Chinese unless the user explicitly requests another language. Keep shell commands, file paths, code identifiers, schema field names, and quoted source text verbatim.
+
 ## Core Framework
 
 ### Three Adversaries
@@ -150,6 +162,7 @@ BCrypt::Password.create(password)  # can't pick wrong
 #### 2. Dangerous Defaults
 
 Defaults that are insecure, or zero/empty values that disable security.
+Insecure defaults cannot be grandfathered for backwards compatibility; deprecate them loudly and require migration.
 
 ```ruby
 # What does timeout=0 mean? Never expire? Expire immediately?
@@ -221,14 +234,3 @@ permissions = Set[Permission::READ, Permission::WRITE]
 | High     | Easy misconfiguration breaks security     | Algorithm param accepts `"none"`                    |
 | Medium   | Uncommon but possible misconfiguration    | Negative timeout has unexpected behavior            |
 | Low      | Requires deliberate misuse                | Obscure parameter combination                       |
-
-### Rationalization Table
-
-| Excuse                                | Why It's Wrong                             | What To Do                                             |
-| ------------------------------------- | ------------------------------------------ | ------------------------------------------------------ |
-| "Docs explain it"                     | Devs skip docs under deadlines             | Make the safe option the default or only option        |
-| "Advanced users need flexibility"     | Flexibility = foot-gun opportunity         | Provide safe high-level API, hide low-level primitives |
-| "It's the developer's responsibility" | You designed the trap                      | Remove the trap or make it impossible to misuse        |
-| "Nobody would do that"                | Devs under pressure do everything          | Assume maximum developer chaos                         |
-| "It's just a config option"           | Config is code; wrong config ships to prod | Validate config, reject dangerous combinations         |
-| "Backwards compatibility"             | Insecure defaults can't be grandfathered   | Deprecate loudly, force migration                      |
