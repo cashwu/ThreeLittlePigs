@@ -1,10 +1,35 @@
-# practice-webpage Specification
+## ADDED Requirements
 
-## Purpose
+### Requirement: 網頁標題反映目前的繪本
 
-TBD - created by archiving change 'english-lines-practice'. Update Purpose after archive.
+網頁的 `<title>` 與 `<h1>` SHALL 標示目前的繪本名稱 `The Ant and The Grasshopper`。頁面 SHALL NOT 出現舊繪本的名稱 `Three Little Pigs`，也 SHALL NOT 出現舊的角色副標 `Ryan - pig 2`。
 
-## Requirements
+由於 `index.html` 完全由 `generate_audio.py` 的 HTML 模板產生，這些字串 SHALL 在模板中更新，而非只手改產出的 `index.html`。
+
+#### Scenario: 標題顯示新的繪本名稱
+
+- **WHEN** 使用者開啟 `index.html`
+- **THEN** 瀏覽器分頁標題與頁面最上方的 `<h1>` SHALL 標示 `The Ant and The Grasshopper`，且頁面上 SHALL NOT 出現 `Three Little Pigs` 或 `Ryan - pig 2`
+
+### Requirement: 產出的網頁與模板一致
+
+`index.html` 是產出物而非來源檔。`generate_audio.py` 的 HTML 模板 SHALL 產生出與目前 `index.html` 相同的既有使用者可見行為，涵蓋 commit `4114ad5` 先前只手改在 `index.html` 而未回寫模板的四個項目：速度按鈕的選項與標籤、預設 `playbackRate`、中文播放按鈕的註解狀態、以及中文文字的縮排對齊。
+
+#### Scenario: 重新產生後既有 UI 調整不倒退
+
+- **WHEN** 執行 `generate_audio.py` 重新產生 `index.html`
+- **THEN** 產出的網頁 SHALL 顯示兩顆速度按鈕「慢慢」與「正常」、預設 `playbackRate` SHALL 為 0.5、中文播放按鈕 SHALL 維持 HTML 註解狀態、中文文字 SHALL 保留其與英文文字對齊的左側縮排
+
+##### Example: 模板需回寫的四個項目
+
+| 項目 | 模板原值 | 應回寫為 |
+| ---- | -------- | -------- |
+| 速度按鈕 | `慢2倍` 0.33 / `慢1倍` 0.5 / `正常` 0.75 | `慢慢` 0.33 / `正常` 0.5 |
+| 預設 `playbackRate` | 0.75 | 0.5 |
+| 中文播放按鈕 | 未註解 | 以 HTML 註解輸出 |
+| `.zh-text` 縮排 | 無 `margin-left` | `margin-left: 50px` |
+
+## MODIFIED Requirements
 
 ### Requirement: Display all lines with translations
 
@@ -24,13 +49,6 @@ TBD - created by archiving change 'english-lines-practice'. Update Purpose after
 - **WHEN** 某個句子的顯示行為 `["Once upon a time,", "a little ant lived in a beautiful meadow."]`
 - **THEN** 該卡片 SHALL 把這兩行渲染為畫面上分開的兩行，中間以 `<br>` 分隔
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
-
 ### Requirement: Play English audio per line
 
 每個英文句子 SHALL 有一個播放/暫停切換按鈕，用以播放或暫停該句子對應的英文 MP3 音檔。播放期間，英文文字 SHALL 顯示逐字 karaoke 高亮。
@@ -46,13 +64,6 @@ tests:
 - **WHEN** 使用者點擊第 7 張句子卡片的播放按鈕
 - **THEN** 瀏覽器 SHALL 播放 `audio/en_p12_07.mp3`
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
-
 ### Requirement: Single active playback
 
 任何新的音訊播放 SHALL 停止目前正在播放或暫停中的音訊。任何時刻 SHALL 至多只有一個音檔處於作用中（播放或暫停）狀態。當某個句子的音訊被另一個句子或被切換頁面所停止時，其按鈕 SHALL 重設為播放符號（▶），且任何逐字高亮 SHALL 被清除。
@@ -66,13 +77,6 @@ tests:
 
 - **WHEN** 某個句子的音訊處於暫停狀態，使用者點擊另一個句子的播放按鈕
 - **THEN** 暫停中的音訊 SHALL 停止、其按鈕 SHALL 重設為播放符號（▶）、其高亮 SHALL 被清除，且新點擊的句子 SHALL 開始播放
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
 
 ### Requirement: Playback speed control
 
@@ -98,69 +102,15 @@ tests:
 - **WHEN** 使用者選擇「慢慢」，播放第 2 頁的某個句子，之後切換到第 4 頁並播放該頁的某個句子
 - **THEN** 第 4 頁的句子 SHALL 同樣以 0.33 倍速播放
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
+## REMOVED Requirements
 
-### Requirement: Child-friendly layout
+### Requirement: Play Chinese audio per line
 
-The webpage SHALL use large font sizes (minimum 28px for English text, minimum 20px for Chinese text), generous spacing between lines, and a clean layout suitable for a child to read and interact with.
+**Reason**: 中文播放按鈕先前已被註解移出網頁，且中文 MP3 檔不再產生。中文文字僅作為閱讀輔助留在畫面上。
 
-#### Scenario: Layout is readable on tablet
+**Migration**: 不渲染任何中文播放按鈕，且不存在任何中文 MP3 檔。中文翻譯仍顯示於每個英文句子之下。
 
-- **WHEN** the page is viewed on a tablet or phone
-- **THEN** the layout SHALL be responsive and text SHALL remain legible without horizontal scrolling
+#### Scenario: 不顯示中文播放按鈕
 
-<!-- @trace
-source: english-lines-practice
-updated: 2026-04-11
-code:
-  - generate_audio.py
-  - index.html
--->
-
-### Requirement: 網頁標題反映目前的繪本
-
-網頁的 `<title>` 與 `<h1>` SHALL 標示目前的繪本名稱 `The Ant and The Grasshopper`。頁面 SHALL NOT 出現舊繪本的名稱 `Three Little Pigs`，也 SHALL NOT 出現舊的角色副標 `Ryan - pig 2`。
-
-由於 `index.html` 完全由 `generate_audio.py` 的 HTML 模板產生，這些字串 SHALL 在模板中更新，而非只手改產出的 `index.html`。
-
-#### Scenario: 標題顯示新的繪本名稱
-
-- **WHEN** 使用者開啟 `index.html`
-- **THEN** 瀏覽器分頁標題與頁面最上方的 `<h1>` SHALL 標示 `The Ant and The Grasshopper`，且頁面上 SHALL NOT 出現 `Three Little Pigs` 或 `Ryan - pig 2`
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
-
-### Requirement: 產出的網頁與模板一致
-
-`index.html` 是產出物而非來源檔。`generate_audio.py` 的 HTML 模板 SHALL 產生出與目前 `index.html` 相同的既有使用者可見行為，涵蓋 commit `4114ad5` 先前只手改在 `index.html` 而未回寫模板的四個項目：速度按鈕的選項與標籤、預設 `playbackRate`、中文播放按鈕的註解狀態、以及中文文字的縮排對齊。
-
-#### Scenario: 重新產生後既有 UI 調整不倒退
-
-- **WHEN** 執行 `generate_audio.py` 重新產生 `index.html`
-- **THEN** 產出的網頁 SHALL 顯示兩顆速度按鈕「慢慢」與「正常」、預設 `playbackRate` SHALL 為 0.5、中文播放按鈕 SHALL 維持 HTML 註解狀態、中文文字 SHALL 保留其與英文文字對齊的左側縮排
-
-##### Example: 模板需回寫的四個項目
-
-| 項目 | 模板原值 | 應回寫為 |
-| ---- | -------- | -------- |
-| 速度按鈕 | `慢2倍` 0.33 / `慢1倍` 0.5 / `正常` 0.75 | `慢慢` 0.33 / `正常` 0.5 |
-| 預設 `playbackRate` | 0.75 | 0.5 |
-| 中文播放按鈕 | 未註解 | 以 HTML 註解輸出 |
-| `.zh-text` 縮排 | 無 `margin-left` | `margin-left: 50px` |
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
+- **WHEN** 使用者檢視任何一張句子卡片
+- **THEN** SHALL NOT 有任何中文播放按鈕可見或可點擊，且中文翻譯 SHALL 仍以文字形式顯示於英文句子之下

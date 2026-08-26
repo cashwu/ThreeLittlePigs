@@ -1,10 +1,4 @@
-# word-karaoke Specification
-
-## Purpose
-
-TBD - created by archiving change 'playback-karaoke'. Update Purpose after archive.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Capture word boundary timing
 
@@ -24,13 +18,6 @@ TBD - created by archiving change 'playback-karaoke'. Update Purpose after archi
 
 - **WHEN** 檢視某個英文句子的時間資料
 - **THEN** 每一筆的 `offset` SHALL 大於或等於前一筆的 `offset`
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
 
 ### Requirement: Canonical tokenization and alignment
 
@@ -54,13 +41,6 @@ tests:
 
 - **WHEN** 某個英文句子有 10 個以空白分隔的 token，但其時間資料只有 9 筆 word boundary
 - **THEN** 網頁 SHALL 在保留該句換行的前提下不做 `<span>` 切分，該句子 SHALL NOT 有逐字高亮，且其他每一個句子 SHALL 維持其高亮
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
 
 ### Requirement: Word-by-word karaoke highlighting
 
@@ -92,10 +72,3 @@ tests:
 
 - **WHEN** 使用者變更播放速度
 - **THEN** 逐字高亮 SHALL 仍追蹤到正確的字，因為它使用反映實際播放位置的 `audio.currentTime`
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->

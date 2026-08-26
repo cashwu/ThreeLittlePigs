@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Three Little Pigs - Lines Practice</title>
+<title>The Ant and The Grasshopper - Storybook Practice</title>
 <style>
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+html {
+  scroll-behavior: auto;
 }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -17,81 +20,41 @@ body {
   padding: 20px;
   max-width: 700px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 h1 {
   text-align: center;
   font-size: 28px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   color: #e67e22;
 }
-.line-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+.tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0;
+  margin-bottom: 12px;
+  background: #fef9ef;
+  scrollbar-width: thin;
 }
-.line-num {
-  display: inline-block;
+.tab-btn {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: 2px solid #e67e22;
+  border-radius: 18px;
+  background: #fff;
+  color: #e67e22;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.tab-btn.active {
   background: #e67e22;
   color: #fff;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  text-align: center;
-  line-height: 28px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-.en-row, .zh-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 8px;
-}
-.en-text {
-  font-size: 28px;
-  line-height: 1.5;
-  flex: 1;
-}
-.zh-text {
-  font-size: 20px;
-  line-height: 1.5;
-  color: #888;
-  flex: 1;
-  margin-left: 50px;
-}
-.play-btn {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.1s;
-}
-.play-btn:active {
-  transform: scale(0.9);
-}
-.play-btn.en {
-  background: #3498db;
-  color: #fff;
-}
-.play-btn.zh {
-  background: #2ecc71;
-  color: #fff;
-}
-.play-btn.playing {
-  background: #e74c3c;
-}
-.word-highlight {
-  color: #e74c3c;
-  font-weight: bold;
 }
 .speed-bar {
   display: flex;
@@ -108,600 +71,2786 @@ h1 {
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.15s;
 }
 .speed-btn.active {
   background: #e67e22;
   color: #fff;
 }
+.page-section {
+  display: none;
+}
+.page-section.active {
+  display: block;
+}
+.line-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.line-num {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: #e67e22;
+  color: #fff;
+  text-align: center;
+  line-height: 28px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.en-row, .zh-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+.en-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 28px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.zh-text {
+  flex: 1;
+  min-width: 0;
+  margin-left: 50px;
+  color: #888;
+  font-size: 20px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.play-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #3498db;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+.play-btn:active {
+  transform: scale(0.9);
+}
+.play-btn.playing {
+  background: #e74c3c;
+}
+.word-highlight {
+  color: #e74c3c;
+  font-weight: bold;
+}
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+  .line-card {
+    padding: 14px;
+  }
+  .en-text {
+    font-size: 24px;
+  }
+  .zh-text {
+    font-size: 18px;
+  }
+}
 </style>
 </head>
 <body>
+<h1>The Ant and The Grasshopper</h1>
 
-<h1>Three Little Pigs</h1>
-<p style="text-align:center; font-size:20px; color:#888; margin-bottom:20px;">Ryan - pig 2</p>
+<nav class="tab-bar" aria-label="Story pages"></nav>
 
-<div class="speed-bar">
+<div class="speed-bar" aria-label="Playback speed">
   <button class="speed-btn" data-rate="0.33">慢慢</button>
   <button class="speed-btn active" data-rate="0.5">正常</button>
-  <!-- <button class="speed-btn" data-rate="0.75">正常</button> -->
 </div>
 
-<div id="lines"></div>
+<!-- Chinese playback buttons are intentionally not rendered. -->
+<main id="pages"></main>
 
 <script>
-const LINES = [
+const PAGES = [
   {
-    "en": "Hi dear friends! We tried straw and wood, but they were not strong enough!",
-    "zh": "嗨，親愛的朋友們！我們試過稻草和木頭，但都不夠堅固！"
+    "page": "2",
+    "sentences": [
+      {
+        "en_lines": [
+          "Once upon a time,",
+          "a little ant lived in a beautiful meadow."
+        ],
+        "zh": "從前，有一隻小螞蟻住在一座美麗的草地上。",
+        "audio": "audio/en_p02_01.mp3",
+        "timings": [
+          {
+            "word": "Once",
+            "offset": 0.1
+          },
+          {
+            "word": "upon",
+            "offset": 0.4
+          },
+          {
+            "word": "a",
+            "offset": 1.025
+          },
+          {
+            "word": "time",
+            "offset": 1.087
+          },
+          {
+            "word": "a",
+            "offset": 1.637
+          },
+          {
+            "word": "little",
+            "offset": 1.688
+          },
+          {
+            "word": "ant",
+            "offset": 2.013
+          },
+          {
+            "word": "lived",
+            "offset": 2.225
+          },
+          {
+            "word": "in",
+            "offset": 2.712
+          },
+          {
+            "word": "a",
+            "offset": 3.138
+          },
+          {
+            "word": "beautiful",
+            "offset": 3.2
+          },
+          {
+            "word": "meadow",
+            "offset": 3.612
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "All summer long, the grass grew tall,",
+          "and the flowers were bright and colorful."
+        ],
+        "zh": "整個夏天，青草長得高高的，花朵鮮豔又繽紛。",
+        "audio": "audio/en_p02_02.mp3",
+        "timings": [
+          {
+            "word": "All",
+            "offset": 0.1
+          },
+          {
+            "word": "summer",
+            "offset": 0.312
+          },
+          {
+            "word": "long",
+            "offset": 0.662
+          },
+          {
+            "word": "the",
+            "offset": 1.212
+          },
+          {
+            "word": "grass",
+            "offset": 1.337
+          },
+          {
+            "word": "grew",
+            "offset": 1.675
+          },
+          {
+            "word": "tall",
+            "offset": 1.863
+          },
+          {
+            "word": "and",
+            "offset": 2.575
+          },
+          {
+            "word": "the",
+            "offset": 2.663
+          },
+          {
+            "word": "flowers",
+            "offset": 2.763
+          },
+          {
+            "word": "were",
+            "offset": 3.225
+          },
+          {
+            "word": "bright",
+            "offset": 3.362
+          },
+          {
+            "word": "and",
+            "offset": 4.013
+          },
+          {
+            "word": "colorful",
+            "offset": 4.15
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The ant spent every day gathering seeds",
+          "for her family in the meadow."
+        ],
+        "zh": "螞蟻每天都為草地上的家人收集種子。",
+        "audio": "audio/en_p02_03.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.263
+          },
+          {
+            "word": "spent",
+            "offset": 0.512
+          },
+          {
+            "word": "every",
+            "offset": 1.125
+          },
+          {
+            "word": "day",
+            "offset": 1.35
+          },
+          {
+            "word": "gathering",
+            "offset": 1.575
+          },
+          {
+            "word": "seeds",
+            "offset": 2.013
+          },
+          {
+            "word": "for",
+            "offset": 2.388
+          },
+          {
+            "word": "her",
+            "offset": 2.525
+          },
+          {
+            "word": "family",
+            "offset": 2.65
+          },
+          {
+            "word": "in",
+            "offset": 3.35
+          },
+          {
+            "word": "the",
+            "offset": 3.45
+          },
+          {
+            "word": "meadow",
+            "offset": 3.538
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "She worked hard, and was always busy."
+        ],
+        "zh": "她努力工作，總是忙個不停。",
+        "audio": "audio/en_p02_04.mp3",
+        "timings": [
+          {
+            "word": "She",
+            "offset": 0.1
+          },
+          {
+            "word": "worked",
+            "offset": 0.312
+          },
+          {
+            "word": "hard",
+            "offset": 0.575
+          },
+          {
+            "word": "and",
+            "offset": 1.125
+          },
+          {
+            "word": "was",
+            "offset": 1.275
+          },
+          {
+            "word": "always",
+            "offset": 1.688
+          },
+          {
+            "word": "busy",
+            "offset": 2.05
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "Now we need something hard, heavy and super strong!",
-    "zh": "現在我們需要又硬、又重、又超級堅固的東西！"
+    "page": "3",
+    "sentences": [
+      {
+        "en_lines": [
+          "One sunny morning, she found a golden seed",
+          "beside a patch of clover."
+        ],
+        "zh": "一個陽光明媚的早晨，她在一片幸運草旁發現了一顆金黃色的種子。",
+        "audio": "audio/en_p03_01.mp3",
+        "timings": [
+          {
+            "word": "One",
+            "offset": 0.1
+          },
+          {
+            "word": "sunny",
+            "offset": 0.388
+          },
+          {
+            "word": "morning",
+            "offset": 0.662
+          },
+          {
+            "word": "she",
+            "offset": 1.262
+          },
+          {
+            "word": "found",
+            "offset": 1.438
+          },
+          {
+            "word": "a",
+            "offset": 2.013
+          },
+          {
+            "word": "golden",
+            "offset": 2.075
+          },
+          {
+            "word": "seed",
+            "offset": 2.475
+          },
+          {
+            "word": "beside",
+            "offset": 2.725
+          },
+          {
+            "word": "a",
+            "offset": 3.062
+          },
+          {
+            "word": "patch",
+            "offset": 3.125
+          },
+          {
+            "word": "of",
+            "offset": 3.775
+          },
+          {
+            "word": "clover",
+            "offset": 3.888
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "It was heavy, but she lifted it",
+          "and carried it toward her home."
+        ],
+        "zh": "種子很重，但她仍把它舉起來，朝家裡搬去。",
+        "audio": "audio/en_p03_02.mp3",
+        "timings": [
+          {
+            "word": "It",
+            "offset": 0.1
+          },
+          {
+            "word": "was",
+            "offset": 0.25
+          },
+          {
+            "word": "heavy",
+            "offset": 0.412
+          },
+          {
+            "word": "but",
+            "offset": 1.012
+          },
+          {
+            "word": "she",
+            "offset": 1.175
+          },
+          {
+            "word": "lifted",
+            "offset": 1.35
+          },
+          {
+            "word": "it",
+            "offset": 1.988
+          },
+          {
+            "word": "and",
+            "offset": 2.375
+          },
+          {
+            "word": "carried",
+            "offset": 2.513
+          },
+          {
+            "word": "it",
+            "offset": 3.163
+          },
+          {
+            "word": "toward",
+            "offset": 3.263
+          },
+          {
+            "word": "her",
+            "offset": 3.525
+          },
+          {
+            "word": "home",
+            "offset": 3.675
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "A grasshopper watched her",
+          "from the top of a bending leaf."
+        ],
+        "zh": "一隻蚱蜢站在彎曲的葉片頂端看著她。",
+        "audio": "audio/en_p03_03.mp3",
+        "timings": [
+          {
+            "word": "A",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.25
+          },
+          {
+            "word": "watched",
+            "offset": 0.887
+          },
+          {
+            "word": "her",
+            "offset": 1.225
+          },
+          {
+            "word": "from",
+            "offset": 1.35
+          },
+          {
+            "word": "the",
+            "offset": 1.512
+          },
+          {
+            "word": "top",
+            "offset": 1.613
+          },
+          {
+            "word": "of",
+            "offset": 2.163
+          },
+          {
+            "word": "a",
+            "offset": 2.55
+          },
+          {
+            "word": "bending",
+            "offset": 2.625
+          },
+          {
+            "word": "leaf",
+            "offset": 3.013
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "He sang a cheerful song",
+          "while she hurried through the long grass."
+        ],
+        "zh": "當她匆匆穿過長草時，他唱著歡快的歌。",
+        "audio": "audio/en_p03_04.mp3",
+        "timings": [
+          {
+            "word": "He",
+            "offset": 0.1
+          },
+          {
+            "word": "sang",
+            "offset": 0.3
+          },
+          {
+            "word": "a",
+            "offset": 0.863
+          },
+          {
+            "word": "cheerful",
+            "offset": 0.925
+          },
+          {
+            "word": "song",
+            "offset": 1.35
+          },
+          {
+            "word": "while",
+            "offset": 1.712
+          },
+          {
+            "word": "she",
+            "offset": 1.863
+          },
+          {
+            "word": "hurried",
+            "offset": 2.025
+          },
+          {
+            "word": "through",
+            "offset": 2.35
+          },
+          {
+            "word": "the",
+            "offset": 2.5
+          },
+          {
+            "word": "long",
+            "offset": 2.612
+          },
+          {
+            "word": "grass",
+            "offset": 2.862
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "I am so excited! We will finally be safe and warm inside!",
-    "zh": "我好興奮！我們終於可以安全又溫暖地待在裡面了！"
+    "page": "4",
+    "sentences": [
+      {
+        "en_lines": [
+          "The next day, the ant returned",
+          "to gather more food."
+        ],
+        "zh": "隔天，螞蟻又回來收集更多食物。",
+        "audio": "audio/en_p04_01.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "next",
+            "offset": 0.225
+          },
+          {
+            "word": "day",
+            "offset": 0.575
+          },
+          {
+            "word": "the",
+            "offset": 1.012
+          },
+          {
+            "word": "ant",
+            "offset": 1.125
+          },
+          {
+            "word": "returned",
+            "offset": 1.363
+          },
+          {
+            "word": "to",
+            "offset": 1.738
+          },
+          {
+            "word": "gather",
+            "offset": 1.85
+          },
+          {
+            "word": "more",
+            "offset": 2.163
+          },
+          {
+            "word": "food",
+            "offset": 2.375
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The grasshopper was still singing,",
+          "dancing, and enjoying the sunshine."
+        ],
+        "zh": "蚱蜢仍在唱歌、跳舞，享受著陽光。",
+        "audio": "audio/en_p04_02.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.237
+          },
+          {
+            "word": "was",
+            "offset": 0.838
+          },
+          {
+            "word": "still",
+            "offset": 0.988
+          },
+          {
+            "word": "singing",
+            "offset": 1.225
+          },
+          {
+            "word": "dancing",
+            "offset": 1.837
+          },
+          {
+            "word": "and",
+            "offset": 2.575
+          },
+          {
+            "word": "enjoying",
+            "offset": 2.987
+          },
+          {
+            "word": "the",
+            "offset": 3.425
+          },
+          {
+            "word": "sunshine",
+            "offset": 3.538
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "He could not understand",
+          "why the ant never stopped to play."
+        ],
+        "zh": "他不明白螞蟻為什麼從不停下來玩。",
+        "audio": "audio/en_p04_03.mp3",
+        "timings": [
+          {
+            "word": "He",
+            "offset": 0.1
+          },
+          {
+            "word": "could",
+            "offset": 0.287
+          },
+          {
+            "word": "not",
+            "offset": 0.45
+          },
+          {
+            "word": "understand",
+            "offset": 0.95
+          },
+          {
+            "word": "why",
+            "offset": 1.538
+          },
+          {
+            "word": "the",
+            "offset": 1.7
+          },
+          {
+            "word": "ant",
+            "offset": 1.837
+          },
+          {
+            "word": "never",
+            "offset": 2.075
+          },
+          {
+            "word": "stopped",
+            "offset": 2.337
+          },
+          {
+            "word": "to",
+            "offset": 2.65
+          },
+          {
+            "word": "play",
+            "offset": 2.75
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "No more running away, no more falling houses today!",
-    "zh": "不用再逃跑了，今天不會再有房子倒塌了！"
+    "page": "5",
+    "sentences": [
+      {
+        "en_lines": [
+          "The ant lifted another seed",
+          "and carried it through the long grass."
+        ],
+        "zh": "螞蟻舉起另一顆種子，搬著它穿過長草。",
+        "audio": "audio/en_p05_01.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.263
+          },
+          {
+            "word": "lifted",
+            "offset": 0.525
+          },
+          {
+            "word": "another",
+            "offset": 1.075
+          },
+          {
+            "word": "seed",
+            "offset": 1.425
+          },
+          {
+            "word": "and",
+            "offset": 2.038
+          },
+          {
+            "word": "carried",
+            "offset": 2.2
+          },
+          {
+            "word": "it",
+            "offset": 2.837
+          },
+          {
+            "word": "through",
+            "offset": 2.938
+          },
+          {
+            "word": "the",
+            "offset": 3.087
+          },
+          {
+            "word": "long",
+            "offset": 3.212
+          },
+          {
+            "word": "grass",
+            "offset": 3.487
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"Why do you bother to work so hard?\"",
+          "asked the grasshopper."
+        ],
+        "zh": "「妳為什麼要這麼辛苦地工作？」蚱蜢問。",
+        "audio": "audio/en_p05_02.mp3",
+        "timings": [
+          {
+            "word": "Why",
+            "offset": 0.1
+          },
+          {
+            "word": "do",
+            "offset": 0.325
+          },
+          {
+            "word": "you",
+            "offset": 0.425
+          },
+          {
+            "word": "bother",
+            "offset": 0.537
+          },
+          {
+            "word": "to",
+            "offset": 0.887
+          },
+          {
+            "word": "work",
+            "offset": 1.0
+          },
+          {
+            "word": "so",
+            "offset": 1.238
+          },
+          {
+            "word": "hard",
+            "offset": 1.45
+          },
+          {
+            "word": "asked",
+            "offset": 2.075
+          },
+          {
+            "word": "the",
+            "offset": 2.413
+          },
+          {
+            "word": "grasshopper",
+            "offset": 2.513
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"Come and sing with me instead.\""
+        ],
+        "zh": "「來和我一起唱歌吧。」",
+        "audio": "audio/en_p05_03.mp3",
+        "timings": [
+          {
+            "word": "Come",
+            "offset": 0.1
+          },
+          {
+            "word": "and",
+            "offset": 0.325
+          },
+          {
+            "word": "sing",
+            "offset": 0.463
+          },
+          {
+            "word": "with",
+            "offset": 0.688
+          },
+          {
+            "word": "me",
+            "offset": 0.85
+          },
+          {
+            "word": "instead",
+            "offset": 0.988
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The ant paused for a moment",
+          "and looked up at him."
+        ],
+        "zh": "螞蟻停了一會兒，抬頭看著他。",
+        "audio": "audio/en_p05_04.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.25
+          },
+          {
+            "word": "paused",
+            "offset": 0.537
+          },
+          {
+            "word": "for",
+            "offset": 0.875
+          },
+          {
+            "word": "a",
+            "offset": 1.462
+          },
+          {
+            "word": "moment",
+            "offset": 1.512
+          },
+          {
+            "word": "and",
+            "offset": 2.112
+          },
+          {
+            "word": "looked",
+            "offset": 2.275
+          },
+          {
+            "word": "up",
+            "offset": 2.763
+          },
+          {
+            "word": "at",
+            "offset": 3.2
+          },
+          {
+            "word": "him",
+            "offset": 3.337
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"I am storing food for winter,\" she explained."
+        ],
+        "zh": "「我正在為冬天儲存食物。」她解釋道。",
+        "audio": "audio/en_p05_05.mp3",
+        "timings": [
+          {
+            "word": "I",
+            "offset": 0.1
+          },
+          {
+            "word": "am",
+            "offset": 0.25
+          },
+          {
+            "word": "storing",
+            "offset": 0.362
+          },
+          {
+            "word": "food",
+            "offset": 0.75
+          },
+          {
+            "word": "for",
+            "offset": 1.025
+          },
+          {
+            "word": "winter",
+            "offset": 1.2
+          },
+          {
+            "word": "she",
+            "offset": 1.837
+          },
+          {
+            "word": "explained",
+            "offset": 2.0
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "Is the brick house strong enough to keep the big bad wolf away?",
-    "zh": "磚頭蓋的房子夠堅固，能擋住大野狼嗎？"
+    "page": "6",
+    "sentences": [
+      {
+        "en_lines": [
+          "\"Winter is far away,\" said the grasshopper."
+        ],
+        "zh": "「冬天還早得很呢。」蚱蜢說。",
+        "audio": "audio/en_p06_01.mp3",
+        "timings": [
+          {
+            "word": "Winter",
+            "offset": 0.1
+          },
+          {
+            "word": "is",
+            "offset": 0.738
+          },
+          {
+            "word": "far",
+            "offset": 0.887
+          },
+          {
+            "word": "away",
+            "offset": 1.45
+          },
+          {
+            "word": "said",
+            "offset": 2.0
+          },
+          {
+            "word": "the",
+            "offset": 2.212
+          },
+          {
+            "word": "grasshopper",
+            "offset": 2.312
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"There is more than enough to eat!\""
+        ],
+        "zh": "「這裡的食物多得吃不完！」",
+        "audio": "audio/en_p06_02.mp3",
+        "timings": [
+          {
+            "word": "There",
+            "offset": 0.1
+          },
+          {
+            "word": "is",
+            "offset": 0.3
+          },
+          {
+            "word": "more",
+            "offset": 0.425
+          },
+          {
+            "word": "than",
+            "offset": 0.675
+          },
+          {
+            "word": "enough",
+            "offset": 1.137
+          },
+          {
+            "word": "to",
+            "offset": 1.413
+          },
+          {
+            "word": "eat",
+            "offset": 1.538
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "And besides, why should we worry",
+          "when the sun is warm and bright?"
+        ],
+        "zh": "而且，陽光這麼溫暖明亮，我們為什麼要擔心呢？",
+        "audio": "audio/en_p06_03.mp3",
+        "timings": [
+          {
+            "word": "And",
+            "offset": 0.1
+          },
+          {
+            "word": "besides",
+            "offset": 0.275
+          },
+          {
+            "word": "why",
+            "offset": 1.038
+          },
+          {
+            "word": "should",
+            "offset": 1.212
+          },
+          {
+            "word": "we",
+            "offset": 1.4
+          },
+          {
+            "word": "worry",
+            "offset": 1.525
+          },
+          {
+            "word": "when",
+            "offset": 1.812
+          },
+          {
+            "word": "the",
+            "offset": 1.962
+          },
+          {
+            "word": "sun",
+            "offset": 2.062
+          },
+          {
+            "word": "is",
+            "offset": 2.625
+          },
+          {
+            "word": "warm",
+            "offset": 2.763
+          },
+          {
+            "word": "and",
+            "offset": 3.312
+          },
+          {
+            "word": "bright",
+            "offset": 3.413
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "Work carefully everyone, make it steady and really strong!",
-    "zh": "大家小心蓋，要蓋得穩、蓋得堅固！"
+    "page": "7",
+    "sentences": [
+      {
+        "en_lines": [
+          "\"You should prepare while food is plentiful,\"",
+          "answered the ant."
+        ],
+        "zh": "「食物充足的時候就該做好準備。」螞蟻回答。",
+        "audio": "audio/en_p07_01.mp3",
+        "timings": [
+          {
+            "word": "You",
+            "offset": 0.1
+          },
+          {
+            "word": "should",
+            "offset": 0.287
+          },
+          {
+            "word": "prepare",
+            "offset": 0.463
+          },
+          {
+            "word": "while",
+            "offset": 0.863
+          },
+          {
+            "word": "food",
+            "offset": 1.05
+          },
+          {
+            "word": "is",
+            "offset": 1.625
+          },
+          {
+            "word": "plentiful",
+            "offset": 1.75
+          },
+          {
+            "word": "answered",
+            "offset": 2.587
+          },
+          {
+            "word": "the",
+            "offset": 2.9
+          },
+          {
+            "word": "ant",
+            "offset": 3.013
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"Cold days will come sooner than you think.\""
+        ],
+        "zh": "「寒冷的日子會比你想像中更快到來。」",
+        "audio": "audio/en_p07_02.mp3",
+        "timings": [
+          {
+            "word": "Cold",
+            "offset": 0.1
+          },
+          {
+            "word": "days",
+            "offset": 0.362
+          },
+          {
+            "word": "will",
+            "offset": 0.637
+          },
+          {
+            "word": "come",
+            "offset": 0.775
+          },
+          {
+            "word": "sooner",
+            "offset": 0.988
+          },
+          {
+            "word": "than",
+            "offset": 1.35
+          },
+          {
+            "word": "you",
+            "offset": 1.5
+          },
+          {
+            "word": "think",
+            "offset": 1.613
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The grasshopper shook his head."
+        ],
+        "zh": "蚱蜢搖了搖頭。",
+        "audio": "audio/en_p07_03.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.25
+          },
+          {
+            "word": "shook",
+            "offset": 0.838
+          },
+          {
+            "word": "his",
+            "offset": 1.062
+          },
+          {
+            "word": "head",
+            "offset": 1.225
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"You are just wasting your time!\"",
+          "he laughed."
+        ],
+        "zh": "「妳只是在浪費時間！」他笑著說。",
+        "audio": "audio/en_p07_04.mp3",
+        "timings": [
+          {
+            "word": "You",
+            "offset": 0.1
+          },
+          {
+            "word": "are",
+            "offset": 0.3
+          },
+          {
+            "word": "just",
+            "offset": 0.425
+          },
+          {
+            "word": "wasting",
+            "offset": 0.7
+          },
+          {
+            "word": "your",
+            "offset": 1.087
+          },
+          {
+            "word": "time",
+            "offset": 1.238
+          },
+          {
+            "word": "he",
+            "offset": 1.9
+          },
+          {
+            "word": "laughed",
+            "offset": 2.038
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "He leaped away to sing",
+          "among the flowers."
+        ],
+        "zh": "他跳進花叢中繼續唱歌。",
+        "audio": "audio/en_p07_05.mp3",
+        "timings": [
+          {
+            "word": "He",
+            "offset": 0.1
+          },
+          {
+            "word": "leaped",
+            "offset": 0.287
+          },
+          {
+            "word": "away",
+            "offset": 0.75
+          },
+          {
+            "word": "to",
+            "offset": 0.963
+          },
+          {
+            "word": "sing",
+            "offset": 1.087
+          },
+          {
+            "word": "among",
+            "offset": 1.637
+          },
+          {
+            "word": "the",
+            "offset": 1.875
+          },
+          {
+            "word": "flowers",
+            "offset": 1.988
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "Our house is made of bricks, it is super strong!",
-    "zh": "我們的房子是磚頭做的，超級堅固！"
+    "page": "8",
+    "sentences": [
+      {
+        "en_lines": [
+          "Day after day, the ant worked."
+        ],
+        "zh": "日復一日，螞蟻不停工作。",
+        "audio": "audio/en_p08_01.mp3",
+        "timings": [
+          {
+            "word": "Day",
+            "offset": 0.1
+          },
+          {
+            "word": "after",
+            "offset": 0.675
+          },
+          {
+            "word": "day",
+            "offset": 1.012
+          },
+          {
+            "word": "the",
+            "offset": 1.525
+          },
+          {
+            "word": "ant",
+            "offset": 1.637
+          },
+          {
+            "word": "worked",
+            "offset": 1.887
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "She carried seeds, grains, and crumbs",
+          "into her little home."
+        ],
+        "zh": "她把種子、穀粒和麵包屑搬進小小的家。",
+        "audio": "audio/en_p08_02.mp3",
+        "timings": [
+          {
+            "word": "She",
+            "offset": 0.1
+          },
+          {
+            "word": "carried",
+            "offset": 0.325
+          },
+          {
+            "word": "seeds",
+            "offset": 0.725
+          },
+          {
+            "word": "grains",
+            "offset": 1.35
+          },
+          {
+            "word": "and",
+            "offset": 2.038
+          },
+          {
+            "word": "crumbs",
+            "offset": 2.2
+          },
+          {
+            "word": "into",
+            "offset": 2.825
+          },
+          {
+            "word": "her",
+            "offset": 3.087
+          },
+          {
+            "word": "little",
+            "offset": 3.237
+          },
+          {
+            "word": "home",
+            "offset": 3.5
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The grasshopper played music",
+          "from morning until night."
+        ],
+        "zh": "蚱蜢從早到晚都在演奏音樂。",
+        "audio": "audio/en_p08_03.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.263
+          },
+          {
+            "word": "played",
+            "offset": 0.863
+          },
+          {
+            "word": "music",
+            "offset": 1.137
+          },
+          {
+            "word": "from",
+            "offset": 1.5
+          },
+          {
+            "word": "morning",
+            "offset": 1.663
+          },
+          {
+            "word": "until",
+            "offset": 2.275
+          },
+          {
+            "word": "night",
+            "offset": 2.562
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "Whenever she passed, he invited her to rest."
+        ],
+        "zh": "每當她經過，他都邀請她停下來休息。",
+        "audio": "audio/en_p08_04.mp3",
+        "timings": [
+          {
+            "word": "Whenever",
+            "offset": 0.1
+          },
+          {
+            "word": "she",
+            "offset": 0.525
+          },
+          {
+            "word": "passed",
+            "offset": 0.688
+          },
+          {
+            "word": "he",
+            "offset": 1.375
+          },
+          {
+            "word": "invited",
+            "offset": 1.488
+          },
+          {
+            "word": "her",
+            "offset": 1.925
+          },
+          {
+            "word": "to",
+            "offset": 2.075
+          },
+          {
+            "word": "rest",
+            "offset": 2.2
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "But the ant kept preparing",
+          "for the coming winter."
+        ],
+        "zh": "但螞蟻仍繼續為即將到來的冬天做準備。",
+        "audio": "audio/en_p08_05.mp3",
+        "timings": [
+          {
+            "word": "But",
+            "offset": 0.1
+          },
+          {
+            "word": "the",
+            "offset": 0.263
+          },
+          {
+            "word": "ant",
+            "offset": 0.375
+          },
+          {
+            "word": "kept",
+            "offset": 0.65
+          },
+          {
+            "word": "preparing",
+            "offset": 0.912
+          },
+          {
+            "word": "for",
+            "offset": 1.4
+          },
+          {
+            "word": "the",
+            "offset": 1.538
+          },
+          {
+            "word": "coming",
+            "offset": 1.637
+          },
+          {
+            "word": "winter",
+            "offset": 1.975
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "Thank you, bricks, for keeping us safe!",
-    "zh": "謝謝你，磚頭，保護了我們的安全！"
+    "page": "10",
+    "sentences": [
+      {
+        "en_lines": [
+          "Summer faded, and autumn arrived."
+        ],
+        "zh": "夏天漸漸離去，秋天來了。",
+        "audio": "audio/en_p10_01.mp3",
+        "timings": [
+          {
+            "word": "Summer",
+            "offset": 0.1
+          },
+          {
+            "word": "faded",
+            "offset": 0.5
+          },
+          {
+            "word": "and",
+            "offset": 1.075
+          },
+          {
+            "word": "autumn",
+            "offset": 1.538
+          },
+          {
+            "word": "arrived",
+            "offset": 2.05
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The green leaves turned gold and brown."
+        ],
+        "zh": "綠葉變成金黃和褐色。",
+        "audio": "audio/en_p10_02.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "green",
+            "offset": 0.25
+          },
+          {
+            "word": "leaves",
+            "offset": 0.588
+          },
+          {
+            "word": "turned",
+            "offset": 0.85
+          },
+          {
+            "word": "gold",
+            "offset": 1.15
+          },
+          {
+            "word": "and",
+            "offset": 1.75
+          },
+          {
+            "word": "brown",
+            "offset": 1.9
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The ant knew that it was time",
+          "to prepare for the coming winter."
+        ],
+        "zh": "螞蟻知道該為即將到來的冬天做準備了。",
+        "audio": "audio/en_p10_03.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.25
+          },
+          {
+            "word": "knew",
+            "offset": 0.487
+          },
+          {
+            "word": "that",
+            "offset": 0.675
+          },
+          {
+            "word": "it",
+            "offset": 1.188
+          },
+          {
+            "word": "was",
+            "offset": 1.275
+          },
+          {
+            "word": "time",
+            "offset": 1.413
+          },
+          {
+            "word": "to",
+            "offset": 1.675
+          },
+          {
+            "word": "prepare",
+            "offset": 1.762
+          },
+          {
+            "word": "for",
+            "offset": 2.2
+          },
+          {
+            "word": "the",
+            "offset": 2.337
+          },
+          {
+            "word": "coming",
+            "offset": 2.438
+          },
+          {
+            "word": "winter",
+            "offset": 2.788
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "She filled her home with seeds",
+          "and made it warm and safe."
+        ],
+        "zh": "她用種子填滿家裡，並把家布置得溫暖又安全。",
+        "audio": "audio/en_p10_04.mp3",
+        "timings": [
+          {
+            "word": "She",
+            "offset": 0.1
+          },
+          {
+            "word": "filled",
+            "offset": 0.325
+          },
+          {
+            "word": "her",
+            "offset": 0.6
+          },
+          {
+            "word": "home",
+            "offset": 0.738
+          },
+          {
+            "word": "with",
+            "offset": 0.925
+          },
+          {
+            "word": "seeds",
+            "offset": 1.05
+          },
+          {
+            "word": "and",
+            "offset": 1.712
+          },
+          {
+            "word": "made",
+            "offset": 1.863
+          },
+          {
+            "word": "it",
+            "offset": 2.062
+          },
+          {
+            "word": "warm",
+            "offset": 2.163
+          },
+          {
+            "word": "and",
+            "offset": 2.725
+          },
+          {
+            "word": "safe",
+            "offset": 2.862
+          }
+        ]
+      }
+    ]
   },
   {
-    "en": "We are safe and happy in our strong brick house!",
-    "zh": "我們在堅固的磚頭屋裡，安全又快樂！"
+    "page": "12",
+    "sentences": [
+      {
+        "en_lines": [
+          "Winter arrived with a bitter wind."
+        ],
+        "zh": "冬天隨著刺骨的寒風到來。",
+        "audio": "audio/en_p12_01.mp3",
+        "timings": [
+          {
+            "word": "Winter",
+            "offset": 0.1
+          },
+          {
+            "word": "arrived",
+            "offset": 0.762
+          },
+          {
+            "word": "with",
+            "offset": 1.125
+          },
+          {
+            "word": "a",
+            "offset": 1.55
+          },
+          {
+            "word": "bitter",
+            "offset": 1.625
+          },
+          {
+            "word": "wind",
+            "offset": 1.887
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "Snow covered the meadow",
+          "and hid every plant from sight."
+        ],
+        "zh": "白雪覆蓋草地，把所有植物都藏了起來。",
+        "audio": "audio/en_p12_02.mp3",
+        "timings": [
+          {
+            "word": "Snow",
+            "offset": 0.1
+          },
+          {
+            "word": "covered",
+            "offset": 0.425
+          },
+          {
+            "word": "the",
+            "offset": 0.75
+          },
+          {
+            "word": "meadow",
+            "offset": 0.838
+          },
+          {
+            "word": "and",
+            "offset": 1.475
+          },
+          {
+            "word": "hid",
+            "offset": 1.613
+          },
+          {
+            "word": "every",
+            "offset": 2.062
+          },
+          {
+            "word": "plant",
+            "offset": 2.288
+          },
+          {
+            "word": "from",
+            "offset": 2.612
+          },
+          {
+            "word": "sight",
+            "offset": 2.788
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The grasshopper searched everywhere for food."
+        ],
+        "zh": "蚱蜢到處尋找食物。",
+        "audio": "audio/en_p12_03.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.237
+          },
+          {
+            "word": "searched",
+            "offset": 0.85
+          },
+          {
+            "word": "everywhere",
+            "offset": 1.5
+          },
+          {
+            "word": "for",
+            "offset": 1.925
+          },
+          {
+            "word": "food",
+            "offset": 2.1
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "But he found only a few seeds left."
+        ],
+        "zh": "但他只找到幾顆剩下的種子。",
+        "audio": "audio/en_p12_04.mp3",
+        "timings": [
+          {
+            "word": "But",
+            "offset": 0.1
+          },
+          {
+            "word": "he",
+            "offset": 0.263
+          },
+          {
+            "word": "found",
+            "offset": 0.375
+          },
+          {
+            "word": "only",
+            "offset": 0.938
+          },
+          {
+            "word": "a",
+            "offset": 1.438
+          },
+          {
+            "word": "few",
+            "offset": 1.5
+          },
+          {
+            "word": "seeds",
+            "offset": 1.7
+          },
+          {
+            "word": "left",
+            "offset": 2.05
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"I'm freezing out here in the meadow,\"",
+          "he cried."
+        ],
+        "zh": "「我在草地上快凍僵了，」他喊道。",
+        "audio": "audio/en_p12_05.mp3",
+        "timings": [
+          {
+            "word": "I'm",
+            "offset": 0.1
+          },
+          {
+            "word": "freezing",
+            "offset": 0.3
+          },
+          {
+            "word": "out",
+            "offset": 1.05
+          },
+          {
+            "word": "here",
+            "offset": 1.225
+          },
+          {
+            "word": "in",
+            "offset": 1.438
+          },
+          {
+            "word": "the",
+            "offset": 1.538
+          },
+          {
+            "word": "meadow",
+            "offset": 1.625
+          },
+          {
+            "word": "he",
+            "offset": 2.2
+          },
+          {
+            "word": "cried",
+            "offset": 2.3
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"And I'm starving, too!\""
+        ],
+        "zh": "「而且我也快餓死了！」",
+        "audio": "audio/en_p12_06.mp3",
+        "timings": [
+          {
+            "word": "And",
+            "offset": 0.1
+          },
+          {
+            "word": "I'm",
+            "offset": 0.625
+          },
+          {
+            "word": "starving",
+            "offset": 0.75
+          },
+          {
+            "word": "too",
+            "offset": 1.438
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "He remembered the busy ant",
+          "and hurried to her home."
+        ],
+        "zh": "他想起勤奮的螞蟻，急忙趕到她的家。",
+        "audio": "audio/en_p12_07.mp3",
+        "timings": [
+          {
+            "word": "He",
+            "offset": 0.1
+          },
+          {
+            "word": "remembered",
+            "offset": 0.287
+          },
+          {
+            "word": "the",
+            "offset": 0.713
+          },
+          {
+            "word": "busy",
+            "offset": 0.812
+          },
+          {
+            "word": "ant",
+            "offset": 1.425
+          },
+          {
+            "word": "and",
+            "offset": 1.988
+          },
+          {
+            "word": "hurried",
+            "offset": 2.087
+          },
+          {
+            "word": "to",
+            "offset": 2.4
+          },
+          {
+            "word": "her",
+            "offset": 2.525
+          },
+          {
+            "word": "home",
+            "offset": 2.663
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "page": "14",
+    "sentences": [
+      {
+        "en_lines": [
+          "He knocked softly on the ant's door."
+        ],
+        "zh": "他輕輕敲了敲螞蟻的門。",
+        "audio": "audio/en_p14_01.mp3",
+        "timings": [
+          {
+            "word": "He",
+            "offset": 0.1
+          },
+          {
+            "word": "knocked",
+            "offset": 0.287
+          },
+          {
+            "word": "softly",
+            "offset": 0.613
+          },
+          {
+            "word": "on",
+            "offset": 1.375
+          },
+          {
+            "word": "the",
+            "offset": 1.525
+          },
+          {
+            "word": "ant's",
+            "offset": 1.613
+          },
+          {
+            "word": "door",
+            "offset": 1.9
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The ant opened it and saw him shivering."
+        ],
+        "zh": "螞蟻打開門，看見他冷得直發抖。",
+        "audio": "audio/en_p14_02.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.263
+          },
+          {
+            "word": "opened",
+            "offset": 0.738
+          },
+          {
+            "word": "it",
+            "offset": 1.275
+          },
+          {
+            "word": "and",
+            "offset": 1.65
+          },
+          {
+            "word": "saw",
+            "offset": 1.8
+          },
+          {
+            "word": "him",
+            "offset": 2.013
+          },
+          {
+            "word": "shivering",
+            "offset": 2.188
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"Please share some food with me,\"",
+          "begged the grasshopper."
+        ],
+        "zh": "「請分一些食物給我。」蚱蜢哀求道。",
+        "audio": "audio/en_p14_03.mp3",
+        "timings": [
+          {
+            "word": "Please",
+            "offset": 0.1
+          },
+          {
+            "word": "share",
+            "offset": 0.375
+          },
+          {
+            "word": "some",
+            "offset": 0.588
+          },
+          {
+            "word": "food",
+            "offset": 0.775
+          },
+          {
+            "word": "with",
+            "offset": 1.062
+          },
+          {
+            "word": "me",
+            "offset": 1.225
+          },
+          {
+            "word": "begged",
+            "offset": 1.663
+          },
+          {
+            "word": "the",
+            "offset": 1.9
+          },
+          {
+            "word": "grasshopper",
+            "offset": 2.0
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"I'm sorry, but I have only enough",
+          "for those who prepared,\" said the ant."
+        ],
+        "zh": "「對不起，我只有足夠分給那些事先做好準備的人。」螞蟻說。",
+        "audio": "audio/en_p14_04.mp3",
+        "timings": [
+          {
+            "word": "I'm",
+            "offset": 0.1
+          },
+          {
+            "word": "sorry",
+            "offset": 0.312
+          },
+          {
+            "word": "but",
+            "offset": 0.925
+          },
+          {
+            "word": "I",
+            "offset": 1.413
+          },
+          {
+            "word": "have",
+            "offset": 1.5
+          },
+          {
+            "word": "only",
+            "offset": 1.663
+          },
+          {
+            "word": "enough",
+            "offset": 2.225
+          },
+          {
+            "word": "for",
+            "offset": 2.475
+          },
+          {
+            "word": "those",
+            "offset": 2.612
+          },
+          {
+            "word": "who",
+            "offset": 2.862
+          },
+          {
+            "word": "prepared",
+            "offset": 2.962
+          },
+          {
+            "word": "said",
+            "offset": 3.688
+          },
+          {
+            "word": "the",
+            "offset": 3.925
+          },
+          {
+            "word": "ant",
+            "offset": 4.025
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "The grasshopper lowered his head",
+          "and knew she was right."
+        ],
+        "zh": "蚱蜢低下頭，知道她是對的。",
+        "audio": "audio/en_p14_05.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.25
+          },
+          {
+            "word": "lowered",
+            "offset": 0.863
+          },
+          {
+            "word": "his",
+            "offset": 1.163
+          },
+          {
+            "word": "head",
+            "offset": 1.312
+          },
+          {
+            "word": "and",
+            "offset": 1.875
+          },
+          {
+            "word": "knew",
+            "offset": 2.038
+          },
+          {
+            "word": "she",
+            "offset": 2.212
+          },
+          {
+            "word": "was",
+            "offset": 2.388
+          },
+          {
+            "word": "right",
+            "offset": 2.6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "page": "15",
+    "sentences": [
+      {
+        "en_lines": [
+          "The ant gave him a small meal",
+          "so he would not go hungry."
+        ],
+        "zh": "螞蟻給了他一小份食物，讓他不至於挨餓。",
+        "audio": "audio/en_p15_01.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "ant",
+            "offset": 0.263
+          },
+          {
+            "word": "gave",
+            "offset": 0.512
+          },
+          {
+            "word": "him",
+            "offset": 0.725
+          },
+          {
+            "word": "a",
+            "offset": 1.113
+          },
+          {
+            "word": "small",
+            "offset": 1.163
+          },
+          {
+            "word": "meal",
+            "offset": 1.5
+          },
+          {
+            "word": "so",
+            "offset": 1.812
+          },
+          {
+            "word": "he",
+            "offset": 1.962
+          },
+          {
+            "word": "would",
+            "offset": 2.087
+          },
+          {
+            "word": "not",
+            "offset": 2.237
+          },
+          {
+            "word": "go",
+            "offset": 2.45
+          },
+          {
+            "word": "hungry",
+            "offset": 2.6
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "\"Next summer, I will work beside you,\"",
+          "promised the grasshopper."
+        ],
+        "zh": "「明年夏天，我會和妳一起工作。」蚱蜢承諾。",
+        "audio": "audio/en_p15_02.mp3",
+        "timings": [
+          {
+            "word": "Next",
+            "offset": 0.1
+          },
+          {
+            "word": "summer",
+            "offset": 0.475
+          },
+          {
+            "word": "I",
+            "offset": 1.075
+          },
+          {
+            "word": "will",
+            "offset": 1.125
+          },
+          {
+            "word": "work",
+            "offset": 1.288
+          },
+          {
+            "word": "beside",
+            "offset": 1.512
+          },
+          {
+            "word": "you",
+            "offset": 1.95
+          },
+          {
+            "word": "promised",
+            "offset": 2.375
+          },
+          {
+            "word": "the",
+            "offset": 2.788
+          },
+          {
+            "word": "grasshopper",
+            "offset": 2.888
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "They ate the seeds",
+          "and slept through the winter."
+        ],
+        "zh": "他們吃了種子，安穩地度過冬天。",
+        "audio": "audio/en_p15_03.mp3",
+        "timings": [
+          {
+            "word": "They",
+            "offset": 0.1
+          },
+          {
+            "word": "ate",
+            "offset": 0.613
+          },
+          {
+            "word": "the",
+            "offset": 0.812
+          },
+          {
+            "word": "seeds",
+            "offset": 0.912
+          },
+          {
+            "word": "and",
+            "offset": 1.675
+          },
+          {
+            "word": "slept",
+            "offset": 1.85
+          },
+          {
+            "word": "through",
+            "offset": 2.2
+          },
+          {
+            "word": "the",
+            "offset": 2.388
+          },
+          {
+            "word": "winter",
+            "offset": 2.5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "page": "16",
+    "sentences": [
+      {
+        "en_lines": [
+          "The grasshopper crawled away,",
+          "knowing how foolish he had been."
+        ],
+        "zh": "蚱蜢慢慢爬走，明白自己之前有多麼愚蠢。",
+        "audio": "audio/en_p16_01.mp3",
+        "timings": [
+          {
+            "word": "The",
+            "offset": 0.1
+          },
+          {
+            "word": "grasshopper",
+            "offset": 0.263
+          },
+          {
+            "word": "crawled",
+            "offset": 0.85
+          },
+          {
+            "word": "away",
+            "offset": 1.4
+          },
+          {
+            "word": "knowing",
+            "offset": 1.988
+          },
+          {
+            "word": "how",
+            "offset": 2.25
+          },
+          {
+            "word": "foolish",
+            "offset": 2.413
+          },
+          {
+            "word": "he",
+            "offset": 2.862
+          },
+          {
+            "word": "had",
+            "offset": 2.962
+          },
+          {
+            "word": "been",
+            "offset": 3.125
+          }
+        ]
+      },
+      {
+        "en_lines": [
+          "And by the time the snow had disappeared,",
+          "he was a much wiser creature indeed."
+        ],
+        "zh": "等到積雪消融時，他確實已經變成一個更有智慧的人了。",
+        "audio": "audio/en_p16_02.mp3",
+        "timings": [
+          {
+            "word": "And",
+            "offset": 0.1
+          },
+          {
+            "word": "by",
+            "offset": 0.275
+          },
+          {
+            "word": "the",
+            "offset": 0.412
+          },
+          {
+            "word": "time",
+            "offset": 0.537
+          },
+          {
+            "word": "the",
+            "offset": 0.838
+          },
+          {
+            "word": "snow",
+            "offset": 0.95
+          },
+          {
+            "word": "had",
+            "offset": 1.2
+          },
+          {
+            "word": "disappeared",
+            "offset": 1.363
+          },
+          {
+            "word": "he",
+            "offset": 2.188
+          },
+          {
+            "word": "was",
+            "offset": 2.288
+          },
+          {
+            "word": "a",
+            "offset": 2.763
+          },
+          {
+            "word": "much",
+            "offset": 2.812
+          },
+          {
+            "word": "wiser",
+            "offset": 3.087
+          },
+          {
+            "word": "creature",
+            "offset": 3.487
+          },
+          {
+            "word": "indeed",
+            "offset": 3.888
+          }
+        ]
+      }
+    ]
   }
 ];
-const TIMINGS = [
-  [
-    {
-      "word": "Hi",
-      "offset": 0.1
-    },
-    {
-      "word": "dear",
-      "offset": 0.362
-    },
-    {
-      "word": "friends",
-      "offset": 0.6
-    },
-    {
-      "word": "We",
-      "offset": 2.087
-    },
-    {
-      "word": "tried",
-      "offset": 2.237
-    },
-    {
-      "word": "straw",
-      "offset": 2.55
-    },
-    {
-      "word": "and",
-      "offset": 2.812
-    },
-    {
-      "word": "wood",
-      "offset": 2.938
-    },
-    {
-      "word": "but",
-      "offset": 3.438
-    },
-    {
-      "word": "they",
-      "offset": 3.587
-    },
-    {
-      "word": "were",
-      "offset": 3.688
-    },
-    {
-      "word": "not",
-      "offset": 3.825
-    },
-    {
-      "word": "strong",
-      "offset": 4.075
-    },
-    {
-      "word": "enough",
-      "offset": 4.388
-    }
-  ],
-  [
-    {
-      "word": "Now",
-      "offset": 0.1
-    },
-    {
-      "word": "we",
-      "offset": 0.35
-    },
-    {
-      "word": "need",
-      "offset": 0.487
-    },
-    {
-      "word": "something",
-      "offset": 0.7
-    },
-    {
-      "word": "hard",
-      "offset": 1.05
-    },
-    {
-      "word": "heavy",
-      "offset": 1.587
-    },
-    {
-      "word": "and",
-      "offset": 1.887
-    },
-    {
-      "word": "super",
-      "offset": 2.025
-    },
-    {
-      "word": "strong",
-      "offset": 2.375
-    }
-  ],
-  [
-    {
-      "word": "I",
-      "offset": 0.1
-    },
-    {
-      "word": "am",
-      "offset": 0.25
-    },
-    {
-      "word": "so",
-      "offset": 0.375
-    },
-    {
-      "word": "excited",
-      "offset": 0.613
-    },
-    {
-      "word": "We",
-      "offset": 2.1
-    },
-    {
-      "word": "will",
-      "offset": 2.263
-    },
-    {
-      "word": "finally",
-      "offset": 2.4
-    },
-    {
-      "word": "be",
-      "offset": 2.837
-    },
-    {
-      "word": "safe",
-      "offset": 2.987
-    },
-    {
-      "word": "and",
-      "offset": 3.325
-    },
-    {
-      "word": "warm",
-      "offset": 3.45
-    },
-    {
-      "word": "inside",
-      "offset": 3.725
-    }
-  ],
-  [
-    {
-      "word": "No",
-      "offset": 0.1
-    },
-    {
-      "word": "more",
-      "offset": 0.312
-    },
-    {
-      "word": "running",
-      "offset": 0.525
-    },
-    {
-      "word": "away",
-      "offset": 0.825
-    },
-    {
-      "word": "no",
-      "offset": 1.363
-    },
-    {
-      "word": "more",
-      "offset": 1.5
-    },
-    {
-      "word": "falling",
-      "offset": 1.688
-    },
-    {
-      "word": "houses",
-      "offset": 2.013
-    },
-    {
-      "word": "today",
-      "offset": 2.425
-    }
-  ],
-  [
-    {
-      "word": "Is",
-      "offset": 0.1
-    },
-    {
-      "word": "the",
-      "offset": 0.275
-    },
-    {
-      "word": "brick",
-      "offset": 0.388
-    },
-    {
-      "word": "house",
-      "offset": 0.637
-    },
-    {
-      "word": "strong",
-      "offset": 0.875
-    },
-    {
-      "word": "enough",
-      "offset": 1.188
-    },
-    {
-      "word": "to",
-      "offset": 1.425
-    },
-    {
-      "word": "keep",
-      "offset": 1.538
-    },
-    {
-      "word": "the",
-      "offset": 1.762
-    },
-    {
-      "word": "big",
-      "offset": 1.863
-    },
-    {
-      "word": "bad",
-      "offset": 2.087
-    },
-    {
-      "word": "wolf",
-      "offset": 2.35
-    },
-    {
-      "word": "away",
-      "offset": 2.562
-    }
-  ],
-  [
-    {
-      "word": "Work",
-      "offset": 0.1
-    },
-    {
-      "word": "carefully",
-      "offset": 0.388
-    },
-    {
-      "word": "everyone",
-      "offset": 0.887
-    },
-    {
-      "word": "make",
-      "offset": 1.625
-    },
-    {
-      "word": "it",
-      "offset": 1.812
-    },
-    {
-      "word": "steady",
-      "offset": 1.95
-    },
-    {
-      "word": "and",
-      "offset": 2.375
-    },
-    {
-      "word": "really",
-      "offset": 2.525
-    },
-    {
-      "word": "strong",
-      "offset": 2.837
-    }
-  ],
-  [
-    {
-      "word": "Our",
-      "offset": 0.1
-    },
-    {
-      "word": "house",
-      "offset": 0.275
-    },
-    {
-      "word": "is",
-      "offset": 0.562
-    },
-    {
-      "word": "made",
-      "offset": 0.688
-    },
-    {
-      "word": "of",
-      "offset": 0.875
-    },
-    {
-      "word": "bricks",
-      "offset": 0.975
-    },
-    {
-      "word": "it",
-      "offset": 1.587
-    },
-    {
-      "word": "is",
-      "offset": 1.675
-    },
-    {
-      "word": "super",
-      "offset": 1.8
-    },
-    {
-      "word": "strong",
-      "offset": 2.15
-    }
-  ],
-  [
-    {
-      "word": "Thank",
-      "offset": 0.1
-    },
-    {
-      "word": "you",
-      "offset": 0.388
-    },
-    {
-      "word": "bricks",
-      "offset": 0.8
-    },
-    {
-      "word": "for",
-      "offset": 1.387
-    },
-    {
-      "word": "keeping",
-      "offset": 1.562
-    },
-    {
-      "word": "us",
-      "offset": 1.938
-    },
-    {
-      "word": "safe",
-      "offset": 2.062
-    }
-  ],
-  [
-    {
-      "word": "We",
-      "offset": 0.1
-    },
-    {
-      "word": "are",
-      "offset": 0.287
-    },
-    {
-      "word": "safe",
-      "offset": 0.412
-    },
-    {
-      "word": "and",
-      "offset": 0.75
-    },
-    {
-      "word": "happy",
-      "offset": 0.863
-    },
-    {
-      "word": "in",
-      "offset": 1.188
-    },
-    {
-      "word": "our",
-      "offset": 1.288
-    },
-    {
-      "word": "strong",
-      "offset": 1.413
-    },
-    {
-      "word": "brick",
-      "offset": 1.738
-    },
-    {
-      "word": "house",
-      "offset": 1.975
-    }
-  ]
-];
+
+const PLAY_ICON = "\u25B6";
+const PAUSE_ICON = "\u23F8";
 
 let currentAudio = null;
 let currentBtn = null;
-let currentLineIdx = -1;
+let currentSentenceKey = null;
+let currentTimings = [];
 let playbackRate = 0.5;
 
-const PLAY_ICON = '▶';
-const PAUSE_ICON = '⏸';
+function sentenceKey(pageNumber, sentenceIndex) {
+  return "p" + String(pageNumber).padStart(2, "0") + "-" +
+    String(sentenceIndex).padStart(2, "0");
+}
 
-document.querySelectorAll('.speed-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelector('.speed-btn.active').classList.remove('active');
-    btn.classList.add('active');
-    playbackRate = parseFloat(btn.dataset.rate);
-    if (currentAudio) {
-      currentAudio.playbackRate = playbackRate;
-    }
+function clearHighlights(key) {
+  if (!key) return;
+  document.querySelectorAll("#en-words-" + key + " .word-span").forEach((span) => {
+    span.classList.remove("word-highlight");
   });
-});
-
-function clearHighlights(lineIdx) {
-  if (lineIdx < 0) return;
-  const spans = document.querySelectorAll(`#en-words-${lineIdx} .word-span`);
-  spans.forEach(s => s.classList.remove('word-highlight'));
 }
 
 function stopCurrent() {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    if (currentBtn) {
-      currentBtn.classList.remove('playing');
-      currentBtn.textContent = PLAY_ICON;
-    }
-    clearHighlights(currentLineIdx);
-    currentAudio = null;
-    currentBtn = null;
-    currentLineIdx = -1;
+  if (!currentAudio) return;
+  currentAudio.pause();
+  currentAudio.currentTime = 0;
+  if (currentBtn) {
+    currentBtn.classList.remove("playing");
+    currentBtn.textContent = PLAY_ICON;
   }
+  clearHighlights(currentSentenceKey);
+  currentAudio = null;
+  currentBtn = null;
+  currentSentenceKey = null;
+  currentTimings = [];
 }
 
 function updateHighlight() {
-  if (!currentAudio || currentLineIdx < 0) return;
-  const timings = TIMINGS[currentLineIdx];
-  if (!timings || !timings.length) return;
-  const spans = document.querySelectorAll(`#en-words-${currentLineIdx} .word-span`);
-  if (spans.length !== timings.length) return;
-  const t = currentAudio.currentTime;
-  let activeIdx = -1;
-  for (let i = 0; i < timings.length; i++) {
-    if (t >= timings[i].offset) activeIdx = i;
+  if (!currentAudio || !currentSentenceKey || !currentTimings.length) return;
+  const spans = document.querySelectorAll(
+    "#en-words-" + currentSentenceKey + " .word-span"
+  );
+  if (spans.length !== currentTimings.length) return;
+
+  let activeIndex = -1;
+  for (let index = 0; index < currentTimings.length; index += 1) {
+    if (currentAudio.currentTime >= currentTimings[index].offset) {
+      activeIndex = index;
+    }
   }
-  spans.forEach((s, i) => {
-    if (i === activeIdx) s.classList.add('word-highlight');
-    else s.classList.remove('word-highlight');
+  spans.forEach((span, index) => {
+    span.classList.toggle("word-highlight", index === activeIndex);
   });
 }
 
-function handleClick(btn, lineIdx, isEnglish) {
-  // Same button: toggle play/pause
-  if (currentBtn === btn && currentAudio) {
+function handlePlayClick(button, pageNumber, sentenceIndex, sentence) {
+  if (currentBtn === button && currentAudio) {
     if (currentAudio.paused) {
       currentAudio.play();
-      btn.classList.add('playing');
-      btn.textContent = PAUSE_ICON;
+      button.classList.add("playing");
+      button.textContent = PAUSE_ICON;
     } else {
       currentAudio.pause();
-      btn.classList.remove('playing');
-      btn.textContent = PLAY_ICON;
-      // Highlight persists on pause — do not clear
+      button.classList.remove("playing");
+      button.textContent = PLAY_ICON;
     }
     return;
   }
 
-  // Different button: stop previous, start new
   stopCurrent();
-  const idx = String(lineIdx + 1).padStart(2, '0');
-  const src = isEnglish ? `audio/en_${idx}.mp3` : `audio/zh_${idx}.mp3`;
-  const audio = new Audio(src);
+  const audio = new Audio(sentence.audio);
+  const key = sentenceKey(pageNumber, sentenceIndex);
   audio.playbackRate = playbackRate;
   currentAudio = audio;
-  currentBtn = btn;
-  currentLineIdx = isEnglish ? lineIdx : -1;
+  currentBtn = button;
+  currentSentenceKey = key;
+  currentTimings = sentence.timings || [];
 
-  btn.classList.add('playing');
-  btn.textContent = PAUSE_ICON;
-
-  if (isEnglish) {
-    clearHighlights(lineIdx);
-    audio.addEventListener('timeupdate', updateHighlight);
-  }
-
-  audio.addEventListener('ended', () => {
-    btn.classList.remove('playing');
-    btn.textContent = PLAY_ICON;
-    clearHighlights(currentLineIdx);
+  clearHighlights(key);
+  button.classList.add("playing");
+  button.textContent = PAUSE_ICON;
+  audio.addEventListener("timeupdate", updateHighlight);
+  audio.addEventListener("ended", () => {
+    if (currentAudio !== audio) return;
+    button.classList.remove("playing");
+    button.textContent = PLAY_ICON;
+    clearHighlights(key);
     currentAudio = null;
     currentBtn = null;
-    currentLineIdx = -1;
+    currentSentenceKey = null;
+    currentTimings = [];
   });
-
   audio.play();
 }
 
-const container = document.getElementById('lines');
-LINES.forEach((line, i) => {
-  const idx = String(i + 1).padStart(2, '0');
-  const card = document.createElement('div');
-  card.className = 'line-card';
+function appendPlainLines(container, lines) {
+  lines.forEach((line, lineIndex) => {
+    if (lineIndex > 0) container.appendChild(document.createElement("br"));
+    container.appendChild(document.createTextNode(line));
+  });
+}
 
-  // Build English text with word spans for karaoke
-  const words = line.en.split(/\s+/);
-  const timings = TIMINGS[i] || [];
-  let enHtml;
-  if (words.length === timings.length) {
-    enHtml = words.map(w => `<span class="word-span">${w}</span>`).join(' ');
-  } else {
-    enHtml = line.en;
+function appendKaraokeLines(container, lines, timings) {
+  const lineTokens = lines.map((line) => line.split(/\s+/));
+  const tokenCount = lineTokens.reduce((total, tokens) => total + tokens.length, 0);
+  if (tokenCount !== timings.length) {
+    appendPlainLines(container, lines);
+    return;
   }
 
-  card.innerHTML = `
-    <span class="line-num">${i + 1}</span>
-    <div class="en-row">
-      <button class="play-btn en" data-line="${i}" data-lang="en">${PLAY_ICON}</button>
-      <div class="en-text" id="en-words-${i}">${enHtml}</div>
-    </div>
-    <div class="zh-row">
-      <!-- <button class="play-btn zh" data-line="${i}" data-lang="zh">${PLAY_ICON}</button> -->
-      <div class="zh-text">${line.zh}</div>
-    </div>
-  `;
-  container.appendChild(card);
-});
+  let tokenIndex = 0;
+  lineTokens.forEach((tokens, lineIndex) => {
+    if (lineIndex > 0) container.appendChild(document.createElement("br"));
+    tokens.forEach((token, indexInLine) => {
+      if (indexInLine > 0) container.appendChild(document.createTextNode(" "));
+      const span = document.createElement("span");
+      span.className = "word-span";
+      span.dataset.wordIndex = String(tokenIndex);
+      span.textContent = token;
+      container.appendChild(span);
+      tokenIndex += 1;
+    });
+  });
+}
 
-document.querySelectorAll('.play-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const lineIdx = parseInt(btn.dataset.line);
-    const isEnglish = btn.dataset.lang === 'en';
-    handleClick(btn, lineIdx, isEnglish);
+function renderPages() {
+  const tabBar = document.querySelector(".tab-bar");
+  const pagesContainer = document.getElementById("pages");
+
+  PAGES.forEach((page, pageIndex) => {
+    const tab = document.createElement("button");
+    tab.className = "tab-btn" + (pageIndex === 0 ? " active" : "");
+    tab.type = "button";
+    tab.dataset.page = page.page;
+    tab.textContent = "p." + page.page;
+    tab.setAttribute("aria-selected", pageIndex === 0 ? "true" : "false");
+    tabBar.appendChild(tab);
+
+    const section = document.createElement("section");
+    section.className = "page-section" + (pageIndex === 0 ? " active" : "");
+    section.dataset.page = page.page;
+
+    page.sentences.forEach((sentence, sentenceOffset) => {
+      const sentenceIndex = sentenceOffset + 1;
+      const key = sentenceKey(page.page, sentenceIndex);
+      const card = document.createElement("article");
+      card.className = "line-card";
+
+      const number = document.createElement("span");
+      number.className = "line-num";
+      number.textContent = String(sentenceIndex);
+      card.appendChild(number);
+
+      const englishRow = document.createElement("div");
+      englishRow.className = "en-row";
+      const playButton = document.createElement("button");
+      playButton.className = "play-btn en";
+      playButton.type = "button";
+      playButton.textContent = PLAY_ICON;
+      playButton.setAttribute(
+        "aria-label",
+        "Play page " + page.page + ", sentence " + sentenceIndex
+      );
+      playButton.addEventListener("click", () => {
+        handlePlayClick(playButton, page.page, sentenceIndex, sentence);
+      });
+      englishRow.appendChild(playButton);
+
+      const englishText = document.createElement("div");
+      englishText.className = "en-text";
+      englishText.id = "en-words-" + key;
+      appendKaraokeLines(englishText, sentence.en_lines, sentence.timings || []);
+      englishRow.appendChild(englishText);
+      card.appendChild(englishRow);
+
+      const chineseRow = document.createElement("div");
+      chineseRow.className = "zh-row";
+      const chineseText = document.createElement("div");
+      chineseText.className = "zh-text";
+      chineseText.textContent = sentence.zh;
+      chineseRow.appendChild(chineseText);
+      card.appendChild(chineseRow);
+
+      section.appendChild(card);
+    });
+
+    pagesContainer.appendChild(section);
+  });
+
+  tabBar.addEventListener("click", (event) => {
+    const selectedTab = event.target.closest(".tab-btn");
+    if (!selectedTab) return;
+    stopCurrent();
+
+    document.querySelectorAll(".tab-btn").forEach((tab) => {
+      const selected = tab === selectedTab;
+      tab.classList.toggle("active", selected);
+      tab.setAttribute("aria-selected", selected ? "true" : "false");
+    });
+    document.querySelectorAll(".page-section").forEach((section) => {
+      section.classList.toggle(
+        "active",
+        section.dataset.page === selectedTab.dataset.page
+      );
+    });
+
+    const selectedPage = document.querySelector(
+      '.page-section[data-page="' + selectedTab.dataset.page + '"]'
+    );
+    const targetTop = selectedPage.offsetTop - tabBar.offsetHeight - 8;
+    window.scrollTo(0, Math.max(0, targetTop));
+  });
+}
+
+document.querySelectorAll(".speed-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelector(".speed-btn.active").classList.remove("active");
+    button.classList.add("active");
+    playbackRate = Number(button.dataset.rate);
+    if (currentAudio) currentAudio.playbackRate = playbackRate;
   });
 });
-</script>
 
+renderPages();
+</script>
 </body>
 </html>

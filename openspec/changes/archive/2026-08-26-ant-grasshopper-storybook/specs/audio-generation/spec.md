@@ -1,10 +1,4 @@
-# audio-generation Specification
-
-## Purpose
-
-TBD - created by archiving change 'english-lines-practice'. Update Purpose after archive.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Single source of truth for lines and translations
 
@@ -30,13 +24,6 @@ TBD - created by archiving change 'english-lines-practice'. Update Purpose after
 - **WHEN** 產生 `story.json`
 - **THEN** 其第一個元素 SHALL 為 `{"page": "2", "sentences": [{"en_lines": ["Once upon a time,", "a little ant lived in a beautiful meadow."], "zh": "..."}, ...]}`
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
-
 ### Requirement: Fail-fast on count mismatch
 
 對 `story.md` 中的每一頁，腳本 SHALL 驗證分句產生的英文句數等於 `story_zh.json` 中該頁列出的中文翻譯數。腳本 SHALL 同時驗證 `story_zh.json` 對 `story.md` 中出現的每一個頁碼都有對應項目。
@@ -52,13 +39,6 @@ tests:
 
 - **WHEN** `story.md` 含有 `## p.10` 標題，但 `story_zh.json` 沒有 `"10"` 這個 key
 - **THEN** 腳本 SHALL 以非零狀態結束，在錯誤訊息中指出第 10 頁，且不產生任何檔案
-
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
 
 ### Requirement: Generate English audio files
 
@@ -109,12 +89,7 @@ tests:
 - **WHEN** 某個句子的 `en_lines` 為 `["The ant knew that it was time", "to prepare for the coming winter."]`
 - **THEN** 腳本 SHALL 把單一字串 `The ant knew that it was time to prepare for the coming winter.` 合成為一個 MP3 檔
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
+## ADDED Requirements
 
 ### Requirement: 把 story.md 解析為頁與句子
 
@@ -172,9 +147,26 @@ tests:
 - **WHEN** 腳本完成解析與分句
 - **THEN** 每一頁的英文句數 SHALL 等於 `story_zh.json` 中該頁的中文翻譯數；具體數值 SHALL 為 4, 4, 3, 5, 3, 5, 5, 4, 7, 5, 3, 2，合計 50 句
 
-<!-- @trace
-source: ant-grasshopper-storybook
-updated: 2026-08-26
-code:
-tests:
--->
+## REMOVED Requirements
+
+### Requirement: Parse eng.md into lines.json
+
+**Reason**: 新故事內容具有頁的層級，且句子跨越多個顯示行，「每個非空白行 = 一個項目」的規則無法表達這種結構。改由「把 story.md 解析為頁與句子」這條需求取代，該需求依句界切句並把繪本換行保留為顯示資訊。
+
+**Migration**: 刪除 `eng.md` 與 `lines.json`。英文故事移至 `story.md` 的頁碼標題之下；中文翻譯從 `generate_audio.py` 內寫死的清單移至 `story_zh.json`；推導出的中介檔改為 `story.json`。
+
+#### Scenario: eng.md 與 lines.json 已不存在
+
+- **WHEN** 產生腳本執行
+- **THEN** 它 SHALL NOT 讀取 `eng.md` 或 `lines.json`，且這兩個檔案 SHALL NOT 存在於 repository 中
+
+### Requirement: Generate Chinese audio files
+
+**Reason**: 中文播放按鈕並未顯示在網頁上，因此中文 MP3 檔從不會被播放。產生它們只會耗費產生時間與磁碟空間而無任何好處。
+
+**Migration**: 刪除既有的 `audio/zh_01.mp3` 至 `audio/zh_09.mp3`，且不再產生任何中文 MP3 檔。中文翻譯仍以文字形式顯示在網頁上。
+
+#### Scenario: 不產生任何中文音檔
+
+- **WHEN** 產生腳本成功結束
+- **THEN** `audio/` 目錄 SHALL NOT 含有任何符合 `zh_*.mp3` 的檔案
