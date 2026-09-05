@@ -1,9 +1,9 @@
 services:
-  ant-grasshopper-app:
+  little-work-plane-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ant-grasshopper-web
+    container_name: little-work-plane-web
     restart: unless-stopped
     ports:
       - "${PORT:-3000}:80"
@@ -18,9 +18,9 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - ant-grasshopper-network
+      - little-work-plane-network
 
 networks:
-  ant-grasshopper-network:
-    name: ant-grasshopper-network
+  little-work-plane-network:
+    name: little-work-plane-network
     driver: bridge

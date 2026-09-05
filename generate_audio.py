@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate The Ant and The Grasshopper audio and storybook webpage."""
+"""Generate The Little Work Plane audio and storybook webpage."""
 
 import asyncio
 import json
@@ -18,7 +18,7 @@ HTML_PATH = Path("index.html")
 
 EN_VOICE = "en-US-JennyNeural"
 PAGE_HEADING = re.compile(r"^## p\.(\d+)$")
-SENTENCE_BOUNDARY = re.compile(r'([.!?]"?)\s+(?=[A-Z"])')
+SENTENCE_BOUNDARY = re.compile(r'([.!?][”’"\']?)\s+(?=[“A-Z"])')
 VOWELS = frozenset("aeiou")
 
 
@@ -40,8 +40,8 @@ def add_learning_pauses(text: str) -> str:
     """Prevent consonant-to-vowel liaison in the synthesized reading."""
     words = text.split()
     for index in range(len(words) - 1):
-        next_word = words[index + 1].lstrip("\"'([{")
-        current_word = words[index].rstrip("\"')]}")
+        next_word = words[index + 1].lstrip("\"'([{“‘")
+        current_word = words[index].rstrip("\"')]}”’")
         previous_letter = current_word[-1:].lower()
         if (
             next_word
@@ -195,7 +195,7 @@ def generate_html(pages: list[dict]) -> None:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Ant and The Grasshopper - Storybook Practice</title>
+<title>The Little Work Plane - Storybook Practice</title>
 <style>
 * {{
   box-sizing: border-box;
@@ -357,7 +357,7 @@ h1 {{
 </style>
 </head>
 <body>
-<h1>The Ant and The Grasshopper</h1>
+<h1>The Little Work Plane</h1>
 
 <nav class="tab-bar" aria-label="Story pages"></nav>
 
@@ -616,7 +616,8 @@ async def main() -> None:
         raise SystemExit(1) from error
 
     write_story_json(pages)
-    print(f"Wrote {STORY_JSON_PATH} (50 sentences)")
+    sentence_count = sum(len(page["sentences"]) for page in pages)
+    print(f"Wrote {STORY_JSON_PATH} ({len(pages)} pages, {sentence_count} sentences)")
 
     print("Generating English audio files...")
     expected_files = await generate_all_audio(pages)

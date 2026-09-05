@@ -1,7 +1,7 @@
 FROM nginx:1.27-alpine
 
 LABEL maintainer="kids-app"
-LABEL description="The Ant and The Grasshopper English practice page"
+LABEL description="The Little Work Plane English practice page"
 
 RUN rm -rf /usr/share/nginx/html/*
 
